@@ -1,6 +1,12 @@
-// Server-only DB client — Supabase Postgres via Drizzle ORM.
-// Set DATABASE_URL in Vercel to your Supabase connection string:
-//   Project Settings → Database → Connection string (URI) → Transaction pooler
+// Server-only DB client — Drizzle ORM over Postgres.
+//
+// Connection priority:
+//   1. SUPABASE_DB_URL  — set this in Vercel to your Supabase connection string
+//      (Dashboard → Project Settings → Database → Connection string → URI,
+//       Transaction pooler port 6543). This is the production database.
+//   2. DATABASE_URL     — Replit's managed Postgres, used automatically in the
+//      dev environment so the app works locally without extra config.
+//
 // Never import this from client code — the importProtection guard on this
 // folder blocks any client bundle from pulling it in.
 import { Pool } from "pg";
@@ -14,16 +20,15 @@ declare global {
 
 function getPool(): Pool {
   if (!globalThis.__certpathPool) {
-    const connectionString = process.env.SUPABASE_DB_URL;
+    const connectionString = process.env.SUPABASE_DB_URL ?? process.env.DATABASE_URL;
     if (!connectionString) {
       throw new Error(
-        "SUPABASE_DB_URL is not set. Add your Supabase connection string (Settings → Database → Connection string → Transaction pooler, port 6543).",
+        "No database connection string found. Set SUPABASE_DB_URL (production) or DATABASE_URL (dev).",
       );
     }
-    // Supabase pooler (port 6543) requires ssl; direct connection (5432) does too.
     globalThis.__certpathPool = new Pool({
       connectionString,
-      ssl: { rejectUnauthorized: false },
+      ssl: connectionString.includes("supabase") ? { rejectUnauthorized: false } : undefined,
     });
   }
   return globalThis.__certpathPool;
