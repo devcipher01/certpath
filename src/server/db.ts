@@ -14,10 +14,10 @@ declare global {
 
 function getPool(): Pool {
   if (!globalThis.__certpathPool) {
-    const connectionString = process.env.DATABASE_URL;
+    const connectionString = process.env.SUPABASE_DB_URL;
     if (!connectionString) {
       throw new Error(
-        "DATABASE_URL is not set. Add your Supabase connection string to Vercel → Settings → Environment Variables.",
+        "SUPABASE_DB_URL is not set. Add your Supabase connection string (Settings → Database → Connection string → Transaction pooler, port 6543).",
       );
     }
     // Supabase pooler (port 6543) requires ssl; direct connection (5432) does too.
