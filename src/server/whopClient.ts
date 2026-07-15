@@ -1,35 +1,21 @@
-// Server-only Whop API helper. Never import this from client code — see the
-// note in schema.ts about the importProtection guard on this folder.
+// Server-only Whop API helper. Uses direct Whop API with WHOP_API_KEY.
+// Never import this from client code — see the note in schema.ts about the
+// importProtection guard on this folder.
 
-function getProxyHeaders(): { hostname: string; headers: Record<string, string> } {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const token = process.env.REPL_IDENTITY
-    ? "repl " + process.env.REPL_IDENTITY
-    : process.env.WEB_REPL_RENEWAL
-      ? "depl " + process.env.WEB_REPL_RENEWAL
-      : null;
-
-  if (!hostname || !token) {
+export async function callWhop<T = unknown>(method: string, path: string, body?: object): Promise<T> {
+  const apiKey = process.env.WHOP_API_KEY;
+  if (!apiKey) {
     throw new Error(
-      "Missing Replit connector environment variables. Ensure the Whop integration is connected via the Integrations tab.",
+      "WHOP_API_KEY is not set. Add it to your environment variables / Vercel project settings.",
     );
   }
 
-  return {
-    hostname,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Replit-Token": token,
-      "Connector-Name": "whop",
-    },
-  };
-}
-
-export async function callWhop<T = unknown>(method: string, path: string, body?: object): Promise<T> {
-  const { hostname, headers } = getProxyHeaders();
-  const resp = await fetch(`https://${hostname}/api/v2/proxy/${path}`, {
+  const resp = await fetch(`https://api.whop.com/${path}`, {
     method,
-    headers,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
     signal: AbortSignal.timeout(15_000),
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   });
@@ -43,6 +29,10 @@ export async function callWhop<T = unknown>(method: string, path: string, body?:
 
 export function getCompanyId(): string {
   const id = process.env.WHOP_COMPANY_ID;
-  if (!id) throw new Error("WHOP_COMPANY_ID is not set.");
+  if (!id) {
+    throw new Error(
+      "WHOP_COMPANY_ID is not set. Add it to your environment variables / Vercel project settings.",
+    );
+  }
   return id;
 }

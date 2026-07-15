@@ -11,12 +11,14 @@ in Postgres via Drizzle ORM, called through TanStack Start server functions.
 - **Routing**: TanStack Router (file-based routes in `src/routes`, generated `src/routeTree.gen.ts`)
 - **Styling/UI**: Tailwind CSS v4 + shadcn/radix-ui components (`src/components`)
 - **Data/forms**: TanStack Query, react-hook-form, zod
-- **Backend**: Replit-provisioned PostgreSQL, accessed via Drizzle ORM (`pg`/node-postgres).
+- **Backend**: Supabase PostgreSQL, accessed via Drizzle ORM (`pg`/node-postgres).
   Schema lives in `src/server/schema.ts`; DB client in `src/server/db.ts` (both server-only —
   never imported by client code). Callable server functions (`createServerFn`) live in
   `src/actions/*.ts` — kept out of `src/server/` on purpose, see note below.
-  Tables: `orders`, `certificates` (unique validation `code`, DB-issued), `exam_attempts`.
-  Schema changes: edit `src/server/schema.ts` then run `bunx drizzle-kit push`.
+  Tables: `orders`, `certificates` (unique validation `code`, DB-issued), `exam_attempts`,
+  `pending_checkouts`. Schema changes: edit `src/server/schema.ts` then run `bunx drizzle-kit push`.
+  **Required env var**: `DATABASE_URL` → Supabase connection string (Settings → Database →
+  Connection string → Transaction pooler, port 6543).
 - **Build config**: `@lovable.dev/vite-tanstack-config` wraps Vite/Tailwind/TanStack Start plugins —
   don't add those plugins manually, it breaks with duplicates (see comment in `vite.config.ts`).
   It also enables TanStack Start's `importProtection`, blocking any client-bundle import whose
@@ -24,9 +26,10 @@ in Postgres via Drizzle ORM, called through TanStack Start server functions.
   regardless of nesting) — this is why server-callable files (`createServerFn` wrappers) live in
   `src/actions/`, not `src/server/functions/`. Keep raw DB/schema/credential code strictly inside
   `src/server/` and callable server functions in `src/actions/`.
-- **Payments**: Whop — connected via Replit Integration (connector `whop`). Company ID stored as
-  `WHOP_COMPANY_ID` env var. API calls go through `src/server/whopClient.ts` (proxy-based, no
-  hardcoded API key). Whop plan IDs are mapped in `src/data/whop-plans.ts` by price point.
+- **Payments**: Whop — direct API (no Replit connector). API calls go through
+  `src/server/whopClient.ts` using `Authorization: Bearer WHOP_API_KEY`.
+  **Required env vars**: `WHOP_API_KEY` and `WHOP_COMPANY_ID` (set in Vercel project settings).
+  Whop plan IDs are mapped in `src/data/whop-plans.ts` by price point.
 - **Package manager**: bun (`bun.lock`, `bunfig.toml`)
 
 ## Running on Replit

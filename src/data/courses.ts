@@ -101,262 +101,287 @@ const makeTutorials = (topics: string[]): Tutorial[] =>
 
 
 const MEDICAL_TRANSCRIPTIONIST_QUIZZES: QuizQuestion[][] = [
-  // Module 1: Medical Terminology Foundations
+  // Module 1: What Is Medical Transcription?
   [
     {
-      q: `A word ends in "-itis." What does that ending tell you?`,
+      q: `What does a medical transcriptionist mainly do?`,
       options: [
-        "Inflammation of the body part named in the root",
-        "Surgical removal of the body part",
-        "A condition present since birth",
-        "A diagnostic imaging procedure",
-      ],
-      answer: 0,
-      explain: `"-itis" is the suffix for inflammation, as in "appendicitis" or "bronchitis."`,
-    },
-    {
-      q: `A physician dictates "the patient is s/p appendectomy." What does "s/p" mean?`,
-      options: ["Suspected pathology", "Status post (after/following)", "Same patient", "Surgical prep"],
-      answer: 1,
-      explain: `"s/p" is shorthand for "status post," meaning the event already happened — here, the patient previously had an appendectomy.`,
-    },
-    {
-      q: `Which pair correctly matches a root with its meaning?`,
-      options: [
-        `"Cardio-" means kidney`,
-        `"Nephro-" means kidney`,
-        `"Osteo-" means skin`,
-        `"Dermo-" means bone`,
+        "Diagnose patients and write prescriptions",
+        "Listen to doctors' recorded notes and type them into written documents",
+        "Take patient blood pressure and vitals",
+        "Schedule appointments at a doctor's office",
       ],
       answer: 1,
-      explain: `"Nephro-" refers to the kidney (e.g., nephrology, nephritis). Mixing up roots is one of the most common transcription errors.`,
-    },
-  ],
-  // Module 2: Anatomy for Transcriptionists
-  [
-    {
-      q: `A report describes a finding in the "left upper quadrant." What region of the body is being referenced?`,
-      options: ["The skull", "The abdomen", "The forearm", "The lower spine"],
-      answer: 1,
-      explain: `The abdomen is commonly divided into four quadrants (RUQ, LUQ, RLQ, LLQ) to describe the location of organs and findings.`,
+      explain: `A medical transcriptionist converts spoken audio recordings from doctors and nurses into accurate written records.`,
     },
     {
-      q: `Why does a transcriptionist need working anatomical knowledge, even without diagnosing patients?`,
+      q: `Where do most medical transcriptionists work?`,
       options: [
-        "To catch dictation errors, like an organ mentioned in the wrong location",
-        "To recommend a treatment plan to the physician",
-        "To perform the physical exam themselves",
-        "It isn't actually necessary for the job",
-      ],
-      answer: 0,
-      explain: `Anatomical context lets a transcriptionist notice when dictated audio doesn't make physical sense — e.g., a "gallbladder" finding placed in the chest — and flag it for clarification.`,
-    },
-    {
-      q: `Which term describes a position closer to the head, as opposed to the feet?`,
-      options: ["Distal", "Superior", "Posterior", "Medial"],
-      answer: 1,
-      explain: `"Superior" means toward the head; its opposite, "inferior," means toward the feet.`,
-    },
-  ],
-  // Module 3: SOAP Notes & Report Structure
-  [
-    {
-      q: `In a SOAP note, which section contains the patient's own description of their symptoms?`,
-      options: ["Objective", "Assessment", "Plan", "Subjective"],
-      answer: 3,
-      explain: `"Subjective" captures what the patient reports in their own words — symptoms, history, and concerns.`,
-    },
-    {
-      q: `A physician dictates vital signs and physical exam findings. Which SOAP section do these belong in?`,
-      options: ["Subjective", "Objective", "Assessment", "Plan"],
-      answer: 1,
-      explain: `"Objective" holds measurable, observed data: vitals, exam findings, and test results.`,
-    },
-    {
-      q: `Why does report structure matter as much as accurate wording?`,
-      options: [
-        "It doesn't — only the words matter",
-        "Consistent structure lets clinicians scan a record quickly and find the right information under time pressure",
-        "It's only a formatting preference with no clinical impact",
-        "It's required only for insurance billing, never for patient care",
-      ],
-      answer: 1,
-      explain: `Clinicians rely on predictable structure to locate information fast; a well-organized note is a patient-safety tool, not just formatting.`,
-    },
-  ],
-  // Module 4: HIPAA & Patient Confidentiality
-  [
-    {
-      q: `A transcriptionist notices a file contains a neighbor's medical record. What should they do?`,
-      options: [
-        "Read it out of curiosity since they already opened it",
-        "Mention it casually to a coworker",
-        "Transcribe it accurately and say nothing about the coincidence",
-        "Report the exposure through the proper channel, per HIPAA breach procedures",
-      ],
-      answer: 3,
-      explain: `Any unauthorized exposure of protected health information must be reported through official channels, regardless of how minor it seems.`,
-    },
-    {
-      q: `Under HIPAA, what is considered "minimum necessary" access?`,
-      options: [
-        "Accessing only the health information needed to complete your specific task",
-        "Accessing every field in a record just in case it's useful later",
-        "Sharing records freely within the same company",
-        "A rule that applies only to physicians, not transcriptionists",
-      ],
-      answer: 0,
-      explain: `The "minimum necessary" standard limits use and disclosure of PHI to what's actually required for the task at hand.`,
-    },
-    {
-      q: `Which of these is an acceptable way to store a finished dictation file before delivery?`,
-      options: [
-        "Emailed to a personal inbox for convenience",
-        "Saved on an unencrypted personal USB drive",
-        "Stored in the platform's encrypted, access-controlled system",
-        "Left open on a shared computer",
+        "Only inside hospital operating rooms",
+        "In pharmacies dispensing medication",
+        "From home or a remote office, working on a computer",
+        "In laboratories running medical tests",
       ],
       answer: 2,
-      explain: `PHI must stay within encrypted, access-controlled systems approved by the employer or client — never personal devices or open channels.`,
+      explain: `Medical transcription is one of the most popular remote healthcare jobs — most transcriptionists work from home using a computer and headset.`,
+    },
+    {
+      q: `Which skill is most important for a medical transcriptionist?`,
+      options: [
+        "Being able to draw blood",
+        "Strong listening and accurate typing",
+        "Knowing how to perform surgery",
+        "Reading X-rays and scans",
+      ],
+      answer: 1,
+      explain: `The core skill is turning spoken words into error-free written text — which requires careful listening and precise typing.`,
     },
   ],
-  // Module 5: Transcription Software & Shortcuts
+  // Module 2: Basic Body Knowledge
   [
     {
-      q: `What is the main advantage of using text-expander shortcuts (e.g., typing "bp" to expand to "blood pressure")?`,
+      q: `If a doctor's note mentions the patient's "left arm," whose left side does that refer to?`,
       options: [
-        "They reduce repetitive typing and speed up turnaround without sacrificing accuracy",
-        "They automatically correct medical errors made by the dictating physician",
-        "They replace the need to proofread a report",
-        "They are required by HIPAA",
-      ],
-      answer: 0,
-      explain: `Expander shortcuts cut down on repetitive keystrokes for common terms, which increases speed while keeping the final text consistent.`,
-    },
-    {
-      q: `Foot pedal controls in transcription software typically handle which function?`,
-      options: [
-        "Adjusting the monitor's brightness",
-        "Play, rewind, and fast-forward through the audio without using the keyboard",
-        "Submitting the finished report",
-        "Encrypting the audio file",
-      ],
-      answer: 1,
-      explain: `A foot pedal frees up the hands to keep typing while controlling audio playback — a core efficiency tool of the job.`,
-    },
-    {
-      q: `A dictation platform flags a file as "STAT." What does that mean for your workflow?`,
-      options: [
-        "The file can wait until the end of the queue",
-        "The file needs to be prioritized and turned around urgently",
-        "The file was submitted incorrectly and should be discarded",
-        "STAT files don't require proofreading",
-      ],
-      answer: 1,
-      explain: `"STAT" flags a report as urgent — typically for reports actively needed for patient care decisions — and it should jump the queue.`,
-    },
-  ],
-  // Module 6: Editing Voice Recognition Drafts
-  [
-    {
-      q: `Speech recognition software transcribes "hyper tension" as "high per tension." What should the editor do?`,
-      options: [
-        "Leave it as-is since the software is usually right",
-        "Correct it to the proper medical term based on context",
-        "Delete the sentence entirely",
-        "Flag the whole report as unusable",
-      ],
-      answer: 1,
-      explain: `Voice recognition frequently mishears medical terms; the editor's job is to catch these and correct them using clinical context.`,
-    },
-    {
-      q: `Why do voice recognition drafts still require a trained human editor?`,
-      options: [
-        "They don't — the software output is considered final",
-        "Editors are only needed for formatting, not content",
-        "Speech engines struggle with accents, background noise, and specialized terminology, so errors slip through",
-        "Editing is only required for handwritten notes",
+        "The doctor's left as they face the patient",
+        "Whichever arm looks injured",
+        "The patient's own left arm",
+        "It depends on the hospital",
       ],
       answer: 2,
-      explain: `Even strong speech-recognition engines misfire on medical jargon, homophones, and audio quality issues — human review remains essential.`,
+      explain: `In medicine, body directions always refer to the patient's own left and right, not the doctor's perspective.`,
     },
     {
-      q: `A drug name in the draft doesn't match anything you recognize. What's the safest next step?`,
+      q: `A doctor says a patient has pain in the "upper abdomen." Where on the body is that?`,
       options: [
-        "Guess the closest-sounding word and move on",
-        "Leave a blank or flag and verify the drug name before finalizing",
-        "Substitute a similar-sounding drug you do recognize",
-        "Delete that sentence from the report",
+        "The lower back",
+        "The belly area, toward the chest",
+        "The shoulder",
+        "The knee",
       ],
       answer: 1,
-      explain: `Guessing on medication names is a patient-safety risk. Flag it for verification rather than inserting an unconfirmed term.`,
+      explain: `The abdomen is the belly area. "Upper abdomen" means the part closer to the chest, where organs like the stomach and liver sit.`,
+    },
+    {
+      q: `Why is it helpful for a transcriptionist to know basic body parts?`,
+      options: [
+        "So they can treat patients themselves",
+        "To notice when something in the recording sounds out of place and flag it",
+        "To pass a surgery licensing exam",
+        "Body knowledge is not useful for this job",
+      ],
+      answer: 1,
+      explain: `Basic anatomy helps a transcriptionist catch obvious errors — like an organ being mentioned in the wrong part of the body — so they can flag it rather than type something incorrect.`,
     },
   ],
-  // Module 7: Specialty Reports (Radiology, Path, Op)
+  // Module 3: Doctor's Notes & Report Structure
   [
     {
-      q: `What is the primary purpose of an operative report?`,
-      options: [
-        "To bill the patient for anesthesia only",
-        "To document exactly what procedure was performed, how, and any findings during surgery",
-        "To schedule the patient's follow-up appointment",
-        "To summarize the patient's insurance coverage",
-      ],
+      q: `What does the "S" in a SOAP note stand for?`,
+      options: ["Surgery", "Subjective (what the patient tells the doctor)", "Symptoms only seen on scans", "Schedule"],
       answer: 1,
-      explain: `An operative report is the definitive record of the surgery itself — technique, findings, and any complications.`,
+      explain: `SOAP stands for Subjective, Objective, Assessment, Plan. The Subjective section records what the patient says about how they feel.`,
     },
     {
-      q: `A radiology report typically ends with which section?`,
-      options: ["Impression (the radiologist's summary conclusion)", "Chief complaint", "Discharge instructions", "Consent form"],
-      answer: 0,
-      explain: `Radiology reports conventionally close with an "Impression" — the radiologist's concise interpretation of the imaging findings.`,
-    },
-    {
-      q: `Why do pathology reports require especially precise terminology?`,
+      q: `A doctor's note says "Rx: ibuprofen." What does "Rx" mean?`,
       options: [
-        "They're rarely reviewed by other clinicians",
-        "Diagnostic and treatment decisions often hinge directly on exact wording, like margin status or cell type",
-        "Pathology reports are purely administrative",
-        "Precision only matters for radiology, not pathology",
-      ],
-      answer: 1,
-      explain: `Pathology findings (e.g., tumor margins, cell differentiation) directly drive treatment decisions, so exact terminology is critical.`,
-    },
-  ],
-  // Module 8: Building Your Freelance Practice
-  [
-    {
-      q: `A new freelance transcriptionist wants to build a reliable client base. What's the most effective first step?`,
-      options: [
-        "Underbid every job regardless of turnaround time or complexity",
-        "Build a portfolio, specialize in a niche (e.g., radiology or ops), and deliver consistent turnaround times",
-        "Avoid all contracts and work purely on handshake agreements",
-        "Wait for clients to find you without any outreach",
-      ],
-      answer: 1,
-      explain: `A focused niche and dependable turnaround are what turn one-off jobs into repeat clients in freelance transcription.`,
-    },
-    {
-      q: `Why might a freelancer choose to specialize in a single report type, like radiology?`,
-      options: [
-        "Specializing has no effect on rate or speed",
-        "Deep familiarity with one report type's terminology and format increases speed, accuracy, and the rate you can charge",
-        "General assignments always pay better than specialized ones",
-        "Clients prefer transcriptionists with no specific experience",
-      ],
-      answer: 1,
-      explain: `Specialization builds fluency with a narrower, denser vocabulary — which typically means faster turnaround and higher per-line or per-report rates.`,
-    },
-    {
-      q: `Which is a realistic red flag when evaluating a potential transcription client or platform?`,
-      options: [
-        "They require a signed confidentiality/HIPAA agreement",
-        "They ask for a short paid trial assignment",
-        "They ask you to handle patient files outside any secure, encrypted platform",
-        "They pay per line or per report with clear rates",
+        "The patient's name",
+        "A medical test to be ordered",
+        "Prescription or treatment ordered",
+        "The doctor's signature",
       ],
       answer: 2,
-      explain: `Any client that routes PHI outside a secure, compliant system is a compliance and liability risk — a legitimate operation will insist on secure handling, not skip it.`,
+      explain: `"Rx" is a common medical shorthand for prescription or recommended treatment. A transcriptionist types this correctly rather than guessing.`,
+    },
+    {
+      q: `Why is it important to type a doctor's notes in the correct format?`,
+      options: [
+        "Formatting doesn't matter as long as the words are right",
+        "Other doctors and nurses rely on a predictable structure to quickly find patient information",
+        "Only the billing department cares about formatting",
+        "Formatting is just about making documents look pretty",
+      ],
+      answer: 1,
+      explain: `Medical staff read notes quickly during busy shifts. Consistent formatting means they can find the information they need fast, which is important for patient safety.`,
+    },
+  ],
+  // Module 4: Privacy & Patient Confidentiality
+  [
+    {
+      q: `HIPAA is a law that mainly protects:`,
+      options: [
+        "Doctors' salaries",
+        "Hospital building codes",
+        "Patients' private medical information",
+        "Medical equipment warranties",
+      ],
+      answer: 2,
+      explain: `HIPAA (Health Insurance Portability and Accountability Act) protects patients' health information from being shared without their permission.`,
+    },
+    {
+      q: `You receive a medical file by accident that belongs to someone you know. What should you do?`,
+      options: [
+        "Read it — you already have it open",
+        "Tell your friends about what you found",
+        "Report the mistake through the proper channel without reading the file",
+        "Keep it in case it becomes useful later",
+      ],
+      answer: 2,
+      explain: `Accidentally receiving someone else's file must be reported right away. Reading it without authorization — even out of curiosity — is a privacy violation.`,
+    },
+    {
+      q: `What is the safest way to send a completed medical document to a client?`,
+      options: [
+        "Your personal email account",
+        "A text message",
+        "A secure, encrypted platform approved by your employer",
+        "Printing it and mailing it yourself",
+      ],
+      answer: 2,
+      explain: `Medical records must travel through secure, encrypted channels. Personal email and text are not secure enough for sensitive patient information.`,
+    },
+  ],
+  // Module 5: Tools of the Trade
+  [
+    {
+      q: `What is a foot pedal used for in medical transcription?`,
+      options: [
+        "Adjusting your chair height",
+        "Controlling audio playback so your hands stay free to type",
+        "Printing finished documents",
+        "Logging into the transcription software",
+      ],
+      answer: 1,
+      explain: `A foot pedal lets you play, pause, rewind, and fast-forward the audio recording without taking your hands off the keyboard — a major speed booster.`,
+    },
+    {
+      q: `What does "text expander" software do?`,
+      options: [
+        "Makes the text on your screen larger",
+        "Translates documents into other languages",
+        "Lets you type a short shortcut that automatically expands into a longer phrase",
+        "Checks documents for spelling errors",
+      ],
+      answer: 2,
+      explain: `Text expanders save time on frequently typed phrases. For example, typing "bp" might auto-expand to "blood pressure," reducing keystrokes.`,
+    },
+    {
+      q: `A file is marked "STAT" in your queue. What does that mean?`,
+      options: [
+        "It's a low-priority file you can do later",
+        "The file needs to be done immediately — it's urgent",
+        "The audio quality is poor and needs technical review",
+        "The file has already been completed",
+      ],
+      answer: 1,
+      explain: `"STAT" is medical slang for immediately. A STAT file needs to jump to the front of the queue because it's urgently needed for patient care.`,
+    },
+  ],
+  // Module 6: Listening, Typing & Accuracy
+  [
+    {
+      q: `A voice recognition program types "high per tension" but the doctor said "hypertension." What should you do?`,
+      options: [
+        "Leave it as-is — the software is usually correct",
+        "Delete the whole sentence",
+        "Correct it to the proper term: hypertension",
+        "Flag it as an error and skip the rest of the document",
+      ],
+      answer: 2,
+      explain: `Voice recognition software often mishears medical terms. Your job as the editor is to catch and fix these errors before the document goes out.`,
+    },
+    {
+      q: `You hear a medication name in a recording but it's unclear and you don't recognize it. What's the best move?`,
+      options: [
+        "Type your best guess at the spelling",
+        "Substitute a medication name you do know",
+        "Leave a blank or flag it so it can be verified before finalizing",
+        "Skip that sentence entirely",
+      ],
+      answer: 2,
+      explain: `Guessing a drug name is dangerous — a wrong medication name in a record could affect a patient's treatment. Always flag unclear terms for review.`,
+    },
+    {
+      q: `Why does accuracy matter so much in medical transcription compared to other typing jobs?`,
+      options: [
+        "It doesn't — any transcription job needs accuracy",
+        "Because errors in medical records can affect a patient's diagnosis or treatment",
+        "Only for legal documents, not routine doctor's notes",
+        "Accuracy only matters if the patient requests a copy",
+      ],
+      answer: 1,
+      explain: `Medical records inform real decisions about patient care. A single typo or mishearing can lead to incorrect treatment — which is why accuracy is the #1 priority in this field.`,
+    },
+  ],
+  // Module 7: Types of Medical Documents
+  [
+    {
+      q: `What is an operative report?`,
+      options: [
+        "A bill sent to the patient after a hospital visit",
+        "A written record of everything that happened during a surgical procedure",
+        "A list of medications the patient takes daily",
+        "An appointment reminder form",
+      ],
+      answer: 1,
+      explain: `An operative report documents a surgery in detail — what was done, how, and any findings or complications. It becomes a permanent part of the patient's record.`,
+    },
+    {
+      q: `A radiology report describes findings from an X-ray. What does a transcriptionist do with this?`,
+      options: [
+        "Interpret the X-ray images themselves",
+        "Type up the radiologist's spoken description of what they saw on the scan",
+        "Order additional scans for the patient",
+        "File the physical X-ray images",
+      ],
+      answer: 1,
+      explain: `A radiologist describes what they see in an image out loud; the transcriptionist types that description into a written report accurately.`,
+    },
+    {
+      q: `What is a "discharge summary"?`,
+      options: [
+        "A document firing a hospital employee",
+        "A note summarizing a patient's stay, treatment, and next steps when they leave the hospital",
+        "A form patients sign when they arrive",
+        "A list of hospital rules for patients",
+      ],
+      answer: 1,
+      explain: `A discharge summary wraps up a hospital stay — what happened, what was treated, and what the patient should do next (medications, follow-ups, etc.).`,
+    },
+  ],
+  // Module 8: Starting Out in the Field
+  [
+    {
+      q: `What is a realistic way to start building experience as a new medical transcriptionist?`,
+      options: [
+        "Wait for hospitals to contact you",
+        "Start with a transcription platform or agency that provides training and feedback on your work",
+        "Only take high-paying jobs right away",
+        "Avoid signing any agreements with clients",
+      ],
+      answer: 1,
+      explain: `Transcription agencies and online platforms are great starting points — they provide work, feedback, and sometimes training, helping you build a track record.`,
+    },
+    {
+      q: `Why do some transcriptionists choose to focus on one type of medical report (like radiology or cardiology)?`,
+      options: [
+        "Because general transcription pays more",
+        "Specializing has no real benefit",
+        "Becoming very familiar with one field's terms and format makes you faster and more accurate, and can lead to higher pay",
+        "Clients prefer workers with no specialty",
+      ],
+      answer: 2,
+      explain: `Specialization means you stop looking up every other word and start producing fast, clean documents — which is exactly what clients will pay a premium for.`,
+    },
+    {
+      q: `Which of these is a warning sign when evaluating a transcription job or platform?`,
+      options: [
+        "They ask you to sign a confidentiality agreement",
+        "They pay per line or per report",
+        "They want you to handle patient files through your personal email or phone",
+        "They offer a short paid test assignment",
+      ],
+      answer: 2,
+      explain: `Legitimate transcription work always uses secure, encrypted systems for patient files. Any employer asking you to use personal email or an unsecured channel is cutting corners on privacy law.`,
     },
   ],
 ];

@@ -128,17 +128,29 @@ function ExamPage() {
               {total} questions · pass with 50%
             </p>
           </div>
-          {submitted && (
-            <div
-              className={`shrink-0 rounded-full px-3 py-1 text-sm font-medium ${
-                passed
-                  ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                  : "bg-destructive/10 text-destructive"
-              }`}
-            >
-              {score}/{total} · {Math.round(pct * 100)}%
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-3">
+            {submitted && (
+              <div
+                className={`shrink-0 rounded-full px-3 py-1 text-sm font-medium ${
+                  passed
+                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                    : "bg-destructive/10 text-destructive"
+                }`}
+              >
+                {score}/{total} · {Math.round(pct * 100)}%
+              </div>
+            )}
+            {passed && (
+              <Link
+                to="/checkout/$slug"
+                params={{ slug: course.slug }}
+                search={{ plan: "cert", route: "exam", score: Math.round(pct * 100) }}
+                className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Continue to checkout — ${course.certPrice} <ArrowRight className="h-4 w-4" />
+              </Link>
+            )}
+          </div>
         </div>
 
         <ol className="mt-6 space-y-5">
