@@ -17,6 +17,7 @@ import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CertificationsIndexRouteImport } from './routes/certifications.index'
 import { Route as ExamSlugRouteImport } from './routes/exam.$slug'
 import { Route as CoursesSlugRouteImport } from './routes/courses.$slug'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as CheckoutSlugRouteImport } from './routes/checkout.$slug'
 import { Route as CertificationsSlugRouteImport } from './routes/certifications.$slug'
 import { Route as CertificateSlugNameRouteImport } from './routes/certificate.$slug.$name'
@@ -61,6 +62,11 @@ const CoursesSlugRoute = CoursesSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => CoursesRoute,
 } as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutSlugRoute = CheckoutSlugRouteImport.update({
   id: '/checkout/$slug',
   path: '/checkout/$slug',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/exam/$slug': typeof ExamSlugRoute
   '/certifications/': typeof CertificationsIndexRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/exam/$slug': typeof ExamSlugRoute
   '/certifications': typeof CertificationsIndexRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/certifications/$slug': typeof CertificationsSlugRoute
   '/checkout/$slug': typeof CheckoutSlugRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/courses/$slug': typeof CoursesSlugRoute
   '/exam/$slug': typeof ExamSlugRoute
   '/certifications/': typeof CertificationsIndexRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/certifications/$slug'
     | '/checkout/$slug'
+    | '/checkout/return'
     | '/courses/$slug'
     | '/exam/$slug'
     | '/certifications/'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/certifications/$slug'
     | '/checkout/$slug'
+    | '/checkout/return'
     | '/courses/$slug'
     | '/exam/$slug'
     | '/certifications'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/certifications/$slug'
     | '/checkout/$slug'
+    | '/checkout/return'
     | '/courses/$slug'
     | '/exam/$slug'
     | '/certifications/'
@@ -161,6 +173,7 @@ export interface RootRouteChildren {
   CoursesRoute: typeof CoursesRouteWithChildren
   PricingRoute: typeof PricingRoute
   CheckoutSlugRoute: typeof CheckoutSlugRoute
+  CheckoutReturnRoute: typeof CheckoutReturnRoute
   ExamSlugRoute: typeof ExamSlugRoute
   CertificateSlugNameRoute: typeof CertificateSlugNameRoute
 }
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesSlugRouteImport
       parentRoute: typeof CoursesRoute
     }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/$slug': {
       id: '/checkout/$slug'
       path: '/checkout/$slug'
@@ -280,6 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoursesRoute: CoursesRouteWithChildren,
   PricingRoute: PricingRoute,
   CheckoutSlugRoute: CheckoutSlugRoute,
+  CheckoutReturnRoute: CheckoutReturnRoute,
   ExamSlugRoute: ExamSlugRoute,
   CertificateSlugNameRoute: CertificateSlugNameRoute,
 }

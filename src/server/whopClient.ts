@@ -1,49 +1,48 @@
-// Server-only Whop SDK client. Never import this from client code — see the
+// Server-only Whop API helper. Never import this from client code — see the
 // note in schema.ts about the importProtection guard on this folder.
-import Whop from "@whop/sdk";
 
-let clientPromise: Promise<Whop> | null = null;
-
-async function initWhopClient(): Promise<Whop> {
+function getProxyHeaders(): { hostname: string; headers: Record<string, string> } {
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY
+  const token = process.env.REPL_IDENTITY
     ? "repl " + process.env.REPL_IDENTITY
     : process.env.WEB_REPL_RENEWAL
       ? "depl " + process.env.WEB_REPL_RENEWAL
       : null;
 
-  if (!hostname || !xReplitToken) {
+  if (!hostname || !token) {
     throw new Error(
-      "Missing Replit environment variables. Ensure the Whop integration is connected via the Integrations tab.",
+      "Missing Replit connector environment variables. Ensure the Whop integration is connected via the Integrations tab.",
     );
   }
 
-  const resp = await fetch(`https://${hostname}/api/v2/connection?include_secrets=true`, {
-    headers: { Accept: "application/json", X_REPLIT_TOKEN: xReplitToken },
-    signal: AbortSignal.timeout(10_000),
-  });
-
-  if (!resp.ok) {
-    throw new Error(`Failed to fetch Whop credentials: ${resp.status} ${resp.statusText}`);
-  }
-
-  const data = await resp.json();
-  const item = (data.items ?? []).find((i: { connector_name?: string }) => i.connector_name === "whop");
-  const settings = item?.settings;
-
-  if (!settings?.api_key) {
-    throw new Error("Whop integration not connected or missing credentials. Connect Whop via the Integrations tab first.");
-  }
-
-  return new Whop({ apiKey: settings.api_key });
+  return {
+    hostname,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Replit-Token": token,
+      "Connector-Name": "whop",
+    },
+  };
 }
 
-export function getWhopClient(): Promise<Whop> {
-  if (!clientPromise) {
-    clientPromise = initWhopClient().catch((err) => {
-      clientPromise = null;
-      throw err;
-    });
+export async function callWhop<T = unknown>(method: string, path: string, body?: object): Promise<T> {
+  const { hostname, headers } = getProxyHeaders();
+  const resp = await fetch(`https://${hostname}/api/v2/proxy/${path}`, {
+    method,
+    headers,
+    signal: AbortSignal.timeout(15_000),
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+  });
+
+  const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(`Whop API error ${resp.status}: ${JSON.stringify(data)}`);
   }
-  return clientPromise;
+  return data as T;
+}
+
+export function getCompanyId(): string {
+  const id = process.env.WHOP_COMPANY_ID;
+  if (!id) throw new Error("WHOP_COMPANY_ID is not set.");
+  return id;
 }

@@ -6,10 +6,10 @@ import { getCourse } from "@/data/courses";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, Lock, ShieldCheck, Award, Copy } from "lucide-react";
+import { Lock, ShieldCheck } from "lucide-react";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
-import { certificateUrl } from "@/lib/certificate";
-import { submitOrder } from "@/actions/checkout";
+import { createWhopCheckout } from "@/actions/checkout";
+import { getWhopPlanId } from "@/data/whop-plans";
 
 const searchSchema = z.object({
   plan: z.enum(["cert", "course", "bundle"]).default("cert"),
@@ -70,15 +70,12 @@ function CheckoutPage() {
       : plan === "bundle"
         ? "Course + Certification"
         : `Certification (${route === "attest" ? "Attestation" : "Exam"})`;
-  const whopPlanId =
-    plan === "course" ? course.whopPlanCourse : plan === "bundle" ? course.whopPlanBundle : course.whopPlanCert;
+  const whopPlanId = getWhopPlanId(plan, price);
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [attest, setAttest] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
-  const [certCode, setCertCode] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const needsAttestation = plan === "cert" && route === "attest";
@@ -89,75 +86,19 @@ function CheckoutPage() {
     if (!canSubmit) return;
     setSubmitting(true);
     setSubmitError(null);
-    // NOTE: Whop in-app checkout scaffold.
-    // Replace with real Whop embedded checkout: https://docs.whop.com/checkout
-    // e.g. window.whop?.openCheckout({ planId: whopPlanId, email, ... })
-    console.log("[Whop] Would open checkout for planId:", whopPlanId, { email, name, plan, route });
     try {
-      const result = await submitOrder({ data: { courseSlug: course.slug, plan, route, name, email, examScore: score } });
-      setCertCode(result.certificateCode);
-      setDone(true);
+      const result = await createWhopCheckout({
+        data: { courseSlug: course.slug, plan, route, name, email, examScore: score },
+      });
+      // Redirect to Whop's hosted checkout page. On success, Whop redirects the
+      // buyer back to /checkout/return?token=... where finalizeCheckout runs.
+      window.location.href = result.purchaseUrl;
     } catch (err) {
       reportLovableError(err instanceof Error ? err : new Error(String(err)), { boundary: "checkout_submit" });
-      setSubmitError("Something went wrong recording your order. Please try again.");
-    } finally {
+      setSubmitError("Something went wrong starting checkout. Please try again.");
       setSubmitting(false);
     }
   };
-
-  if (done) {
-    const certLink = certCode ? certificateUrl({ slug: course.slug, name, code: certCode }) : null;
-
-    return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <SiteHeader />
-        <main className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center px-4 py-16 text-center">
-          <div className="grid h-14 w-14 place-items-center rounded-full bg-primary/10 text-primary">
-            <CheckCircle2 className="h-8 w-8" />
-          </div>
-          <h1 className="mt-4 text-2xl font-semibold">You're all set</h1>
-          <p className="mt-2 text-muted-foreground">
-            A receipt and access instructions for <strong>{planLabel}</strong> in {course.title} have
-            been sent to <strong>{email}</strong>.
-          </p>
-
-          {certCode && certLink && (
-            <div className="mt-6 w-full rounded-xl border border-primary/30 bg-primary/5 p-5 text-left">
-              <div className="flex items-center gap-2 text-primary">
-                <Award className="h-5 w-5" />
-                <h2 className="font-semibold text-foreground">Your certificate is ready</h2>
-              </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                This validation code was included with your Whop purchase — anyone can use it to
-                confirm your certificate is genuine.
-              </p>
-              <div className="mt-3 flex items-center justify-between gap-2 rounded-md border border-dashed border-border bg-background px-3 py-2">
-                <code className="text-sm font-semibold tracking-wider text-foreground">{certCode}</code>
-                <button
-                  type="button"
-                  onClick={() => navigator.clipboard?.writeText(certCode)}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-                >
-                  <Copy className="h-3.5 w-3.5" /> Copy
-                </button>
-              </div>
-              <a
-                href={certLink}
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                View your certificate online <Award className="h-4 w-4" />
-              </a>
-            </div>
-          )}
-
-          <Link to="/courses" className="mt-6 text-sm font-medium text-primary hover:underline">
-            Back to courses →
-          </Link>
-        </main>
-        <SiteFooter />
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
