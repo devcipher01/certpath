@@ -95,7 +95,8 @@ function CheckoutPage() {
       window.location.href = result.purchaseUrl;
     } catch (err) {
       reportLovableError(err instanceof Error ? err : new Error(String(err)), { boundary: "checkout_submit" });
-      setSubmitError("Something went wrong starting checkout. Please try again.");
+      const msg = err instanceof Error ? err.message : String(err);
+      setSubmitError(`Checkout error: ${msg}`);
       setSubmitting(false);
     }
   };

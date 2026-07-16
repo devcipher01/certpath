@@ -85,9 +85,15 @@ export const createWhopCheckout = createServerFn({ method: "POST" })
     // pending checkout on return without exposing any internal IDs.
     const token = crypto.randomBytes(24).toString("base64url");
 
-    // Derive the return URL from the incoming request's origin so it works in
-    // both dev (replit.dev) and production (deployed domain) without hardcoding.
-    const origin = new URL(getRequestUrl()).origin;
+    // Derive the return URL. On Vercel, VERCEL_URL is the canonical deployment
+    // host; fall back to the incoming request origin for dev / other platforms.
+    let origin: string;
+    try {
+      const vercelUrl = process.env.VERCEL_URL; // e.g. "my-app.vercel.app"
+      origin = vercelUrl ? `https://${vercelUrl}` : new URL(getRequestUrl()).origin;
+    } catch {
+      origin = new URL(getRequestUrl()).origin;
+    }
     const redirectUrl = `${origin}/checkout/return?token=${token}`;
 
     // Create the Whop hosted checkout configuration.
