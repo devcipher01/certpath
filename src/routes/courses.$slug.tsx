@@ -10,6 +10,54 @@ import { Award, BookOpen, Clock, ArrowRight, ShieldCheck, Clipboard, PlayCircle 
 import { CertPreview } from "@/components/cert-preview";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 
+// ── Simple inline markdown renderer ──────────────────────────────────────────
+// Handles **bold**, and lines starting with "• " as list items.
+function renderInline(text: string): React.ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) =>
+    part.startsWith("**") && part.endsWith("**")
+      ? <strong key={i}>{part.slice(2, -2)}</strong>
+      : part
+  );
+}
+
+function renderContent(paragraph: string) {
+  // Split on newlines so bullet lists embedded in a paragraph render as <ul>
+  const lines = paragraph.split("\n");
+  const nodes: React.ReactNode[] = [];
+  let listItems: string[] = [];
+
+  function flushList() {
+    if (!listItems.length) return;
+    nodes.push(
+      <ul key={`ul-${nodes.length}`} className="ml-1 list-disc space-y-1 pl-5 text-sm leading-relaxed text-foreground">
+        {listItems.map((item, i) => (
+          <li key={i}>{renderInline(item)}</li>
+        ))}
+      </ul>
+    );
+    listItems = [];
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trimStart();
+    if (trimmed.startsWith("• ") || trimmed.startsWith("* ")) {
+      listItems.push(trimmed.slice(2));
+    } else if (trimmed === "") {
+      flushList();
+    } else {
+      flushList();
+      nodes.push(
+        <p key={`p-${nodes.length}`} className="text-sm leading-relaxed text-foreground">
+          {renderInline(trimmed)}
+        </p>
+      );
+    }
+  }
+  flushList();
+  return nodes;
+}
+
 export const Route = createFileRoute("/courses/$slug")({
   loader: ({ params }) => {
     const course = getCourse(params.slug);
@@ -159,10 +207,12 @@ function CoursePage() {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="space-y-4">
-                        <div className="space-y-3 text-sm leading-relaxed text-foreground">
-                          {tut.content.map((p, pi) => (
-                            <p key={pi}>{p}</p>
-                          ))}
+                        <div className="space-y-3">
+                          {tut.content.flatMap((p, pi) =>
+                            renderContent(p).map((node, ni) =>
+                              <div key={`${pi}-${ni}`}>{node}</div>
+                            )
+                          )}
                         </div>
                         <div className="rounded-md border border-border bg-background/60 p-3">
                           <div className="mb-2 flex items-center gap-2 text-sm font-semibold">

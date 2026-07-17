@@ -69,7 +69,7 @@ function CertPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-12">
-        <Link to="/certifications" className="text-sm text-muted-foreground hover:text-foreground">← All certifications</Link>
+        <Link to="/courses/$slug" params={{ slug: course.slug }} className="text-sm text-muted-foreground hover:text-foreground">← Back to course</Link>
         <div className="mt-4 flex items-center gap-3">
           <div className="grid h-12 w-12 place-items-center rounded-lg bg-primary/10 text-primary">
             <Award className="h-6 w-6" />
@@ -131,7 +131,7 @@ function CertPage() {
               </h3>
               <p className="text-sm text-muted-foreground">
                 {route === "exam"
-                  ? "Take a short proficiency exam first — you only pay after you pass."
+                  ? "No upfront cost — answer a few questions first. You're only charged after you pass."
                   : "You'll sign an attestation and get your cert after checkout."}
               </p>
             </div>

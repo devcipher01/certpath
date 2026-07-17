@@ -5,7 +5,7 @@ import { SiteHeader, SiteFooter } from "@/components/site-header";
 import { getCourse } from "@/data/courses";
 import { CertPreview } from "@/components/cert-preview";
 import { verifyCertificate } from "@/actions/certificates";
-import { ShieldCheck, ShieldAlert, Download, Loader2 } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Download, Loader2, Copy } from "lucide-react";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 // NOTE: download-cert intentionally NOT statically imported — see checkout.return.tsx
 
@@ -65,6 +65,16 @@ function CertificatePage() {
   };
   const { code } = Route.useSearch();
   const [downloading, setDownloading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const certUrl = typeof window !== "undefined" ? window.location.href : "";
+
+  function copyUrl() {
+    navigator.clipboard?.writeText(certUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   if (!result.valid) {
     return (
@@ -134,10 +144,26 @@ function CertificatePage() {
           </button>
         </div>
 
-        <p className="mt-8 text-center text-sm text-muted-foreground">
-          Anyone with this link can verify this certificate — share it on LinkedIn, a resume, or with
-          an employer.
-        </p>
+        {/* Shareable cert URL */}
+        <div className="mt-6 rounded-xl border border-border bg-card p-5">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Your certificate link
+          </p>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Anyone with this link can verify your credential. Share it on LinkedIn, your résumé, or with an employer.
+          </p>
+          <div className="flex items-center gap-2 rounded-md border border-dashed border-border bg-background px-3 py-2">
+            <code className="min-w-0 flex-1 truncate text-xs text-foreground">{certUrl}</code>
+            <button
+              type="button"
+              onClick={copyUrl}
+              className="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+            >
+              <Copy className="h-3.5 w-3.5" />
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        </div>
       </main>
       <SiteFooter />
     </div>
