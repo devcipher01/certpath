@@ -22,5 +22,12 @@ export default defineConfig({
       strictPort: true,
       allowedHosts: true,
     },
+    // html-to-image accesses browser globals (document, window) — keeping it
+    // out of the SSR bundle prevents the Vercel serverless function from crashing.
+    // It is only ever imported client-side (inside an onClick handler) so it
+    // never needs to be available on the server at runtime.
+    ssr: {
+      external: ["html-to-image"],
+    },
   },
 });

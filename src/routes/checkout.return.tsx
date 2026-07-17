@@ -6,8 +6,11 @@ import { CertPreview } from "@/components/cert-preview";
 import { CheckCircle2, Copy, AlertCircle, RefreshCw, Download, ExternalLink, Loader2 } from "lucide-react";
 import { certificateUrl } from "@/lib/certificate";
 import { saveCertLocally } from "@/lib/cert-storage";
-import { downloadCertAsImage } from "@/lib/download-cert";
 import { finalizeCheckout } from "@/actions/checkout";
+// NOTE: download-cert is intentionally NOT statically imported here.
+// A static import would pull html-to-image into the SSR/server bundle, crashing
+// the Vercel/Cloudflare function. The dynamic import in the onClick handler keeps
+// it client-bundle only.
 
 const searchSchema = z.object({
   token: z.string().min(1),
@@ -162,6 +165,7 @@ function ReturnPage() {
                 onClick={async () => {
                   setDownloading(true);
                   try {
+                    const { downloadCertAsImage } = await import("@/lib/download-cert");
                     await downloadCertAsImage(`certpath-${courseSlug}.png`);
                   } finally {
                     setDownloading(false);

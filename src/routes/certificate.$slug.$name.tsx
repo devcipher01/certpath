@@ -6,8 +6,8 @@ import { getCourse } from "@/data/courses";
 import { CertPreview } from "@/components/cert-preview";
 import { verifyCertificate } from "@/actions/certificates";
 import { ShieldCheck, ShieldAlert, Download, Loader2 } from "lucide-react";
-import { downloadCertAsImage } from "@/lib/download-cert";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
+// NOTE: download-cert intentionally NOT statically imported — see checkout.return.tsx
 
 const searchSchema = z.object({
   code: z.string().min(1),
@@ -118,6 +118,7 @@ function CertificatePage() {
             onClick={async () => {
               setDownloading(true);
               try {
+                const { downloadCertAsImage } = await import("@/lib/download-cert");
                 await downloadCertAsImage(`certpath-${course.slug}.png`);
               } finally {
                 setDownloading(false);
