@@ -142,3 +142,22 @@
     color: var(--color-foreground);
   }
 }
+
+/* When printing from either the checkout return page or the certificate page,
+   hide everything except the certificate preview itself.
+   visibility:hidden/visible is used (not display:none) so it can be toggled
+   on a deeply-nested element without hiding its ancestors. */
+@media print {
+  body * { visibility: hidden; }
+
+  #cert-print-target,
+  #cert-print-target * { visibility: visible; }
+
+  #cert-print-target {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+  }
+}

@@ -4,17 +4,19 @@ export function CertPreview({
   courseTitle,
   recipientName = "Your Name Here",
   date,
+  hideNote = false,
 }: {
   courseTitle: string;
   recipientName?: string;
   date?: string;
+  hideNote?: boolean;
 }) {
   const issued =
     date ??
     new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   return (
-    <div className="relative mx-auto w-full max-w-2xl">
+    <div id="cert-print-target" className="relative mx-auto w-full max-w-2xl">
       {/* Faux page shadow to feel like a PDF */}
       <div className="absolute inset-0 translate-x-1 translate-y-1 rounded-md bg-black/10 blur-[2px]" aria-hidden />
       <div className="relative aspect-[1.414/1] w-full overflow-hidden rounded-md border border-border bg-[#fffaf2] p-6 shadow-md sm:p-10">
@@ -75,9 +77,11 @@ export function CertPreview({
           </div>
         </div>
       </div>
-      <p className="mt-2 text-center text-xs text-muted-foreground">
-        Preview — your certificate will be delivered as a downloadable PDF.
-      </p>
+      {!hideNote && (
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          Preview — your certificate will be delivered as a downloadable PDF.
+        </p>
+      )}
     </div>
   );
 }
