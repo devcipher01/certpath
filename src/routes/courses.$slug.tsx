@@ -164,12 +164,13 @@ function CoursePage() {
                 >
                   <Award className="h-4 w-4" /> Get certified
                 </Link>
-                <a
-                  href="#course-content"
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("course-modules")?.scrollIntoView({ behavior: "smooth" })}
                   className="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground hover:bg-accent"
                 >
                   <PlayCircle className="h-4 w-4" /> Continue to course
-                </a>
+                </button>
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
                 Bundle (course + certification) — ${course.bundlePrice}. Cert-only from ${course.certPrice}.
@@ -179,7 +180,7 @@ function CoursePage() {
           </div>
         </section>
 
-        <section id="course-content" className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-3">
+        <section id="course-modules" className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-3">
 
           <div className="lg:col-span-2">
             <Tabs defaultValue="tutorials">
