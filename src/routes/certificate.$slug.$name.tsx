@@ -1,11 +1,12 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 import { getCourse } from "@/data/courses";
 import { CertPreview } from "@/components/cert-preview";
 import { verifyCertificate } from "@/actions/certificates";
-import { ShieldCheck, ShieldAlert, Download } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Download, Loader2 } from "lucide-react";
+import { downloadCertAsImage } from "@/lib/download-cert";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 
 const searchSchema = z.object({
@@ -63,6 +64,7 @@ function CertificatePage() {
     result: Awaited<ReturnType<typeof verifyCertificate>>;
   };
   const { code } = Route.useSearch();
+  const [downloading, setDownloading] = useState(false);
 
   if (!result.valid) {
     return (
@@ -112,10 +114,22 @@ function CertificatePage() {
           </div>
           <button
             type="button"
-            onClick={() => window.print()}
-            className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground hover:bg-accent"
+            disabled={downloading}
+            onClick={async () => {
+              setDownloading(true);
+              try {
+                await downloadCertAsImage(`certpath-${course.slug}.png`);
+              } finally {
+                setDownloading(false);
+              }
+            }}
+            className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground hover:bg-accent disabled:opacity-60"
           >
-            <Download className="h-4 w-4" /> Save as PDF
+            {downloading ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> Generating…</>
+            ) : (
+              <><Download className="h-4 w-4" /> Download Certificate</>
+            )}
           </button>
         </div>
 

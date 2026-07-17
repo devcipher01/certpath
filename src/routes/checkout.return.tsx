@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 import { CertPreview } from "@/components/cert-preview";
-import { CheckCircle2, Copy, AlertCircle, RefreshCw, Download, ExternalLink } from "lucide-react";
+import { CheckCircle2, Copy, AlertCircle, RefreshCw, Download, ExternalLink, Loader2 } from "lucide-react";
 import { certificateUrl } from "@/lib/certificate";
 import { saveCertLocally } from "@/lib/cert-storage";
+import { downloadCertAsImage } from "@/lib/download-cert";
 import { finalizeCheckout } from "@/actions/checkout";
 
 const searchSchema = z.object({
@@ -83,6 +84,7 @@ function ReturnPage() {
   const result = Route.useLoaderData();
   const { orderId, certificateCode, plan, name, email, courseName, courseSlug } = result;
   const [copied, setCopied] = useState<"url" | "code" | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const planLabel =
     plan === "course"
@@ -156,10 +158,22 @@ function ReturnPage() {
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <button
                 type="button"
-                onClick={() => window.print()}
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                disabled={downloading}
+                onClick={async () => {
+                  setDownloading(true);
+                  try {
+                    await downloadCertAsImage(`certpath-${courseSlug}.png`);
+                  } finally {
+                    setDownloading(false);
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
               >
-                <Download className="h-4 w-4" /> Save as PDF
+                {downloading ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Generating…</>
+                ) : (
+                  <><Download className="h-4 w-4" /> Download Certificate</>
+                )}
               </button>
               <a
                 href={certRelativeLink}
