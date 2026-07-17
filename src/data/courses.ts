@@ -100,6 +100,239 @@ const makeTutorials = (topics: string[]): Tutorial[] =>
   );
 
 
+const MEDICAL_TRANSCRIPTIONIST_TUTORIALS: Tutorial[] = [
+  // ── Module 1: Medical Terminology Foundations ─────────────────────────────
+  {
+    title: "Module 1: Medical Terminology Foundations",
+    minutes: 28,
+    summary: "Learn how medical words are built from Greek and Latin roots, prefixes, and suffixes — and master the abbreviations used in everyday dictation.",
+    content: [
+      `Medical language looks intimidating until you learn its secret: almost every term is assembled from a small set of Greek and Latin building blocks. A prefix attaches to the front to modify meaning, a root carries the core idea, and a suffix at the end tells you what is happening. Once you know the parts, you can decode words you have never seen before.`,
+
+      `**Common roots you will hear constantly:** cardi/o (heart), hepat/o (liver), nephr/o (kidney), pulmon/o (lung), gastr/o (stomach), neur/o (nerve), dermat/o (skin), oste/o (bone), my/o (muscle), and hem/o or hemat/o (blood). A doctor dictating "the patient has cardiomegaly" is literally saying "heart enlargement" — cardi (heart) + megaly (enlargement).`,
+
+      `**Key prefixes:** brady- (slow), tachy- (fast), hyper- (above/excess), hypo- (below/deficient), peri- (around), sub- (under), inter- (between), poly- (many), dys- (painful or difficult), a-/an- (without). "Bradycardia" = slow heart rate. "Dyspnea" = difficulty breathing.`,
+
+      `**Key suffixes:** -itis (inflammation), -ectomy (surgical removal), -plasty (surgical repair), -oscopy (visual examination), -ology (study of), -algia (pain), -emia (blood condition), -megaly (enlargement), -stenosis (narrowing). "Appendectomy" = removal of the appendix. "Arthralgia" = joint pain.`,
+
+      `**Medical plurals follow Latin/Greek rules** rather than the usual English "add an s." You must know these because doctors dictate the singular and the plural interchangeably: bacterium → bacteria, diagnosis → diagnoses, criterion → criteria, vertebra → vertebrae, nucleus → nuclei, ovum → ova, phalanx → phalanges. Typing the wrong form is a transcription error that can affect record accuracy.`,
+
+      `**Standard abbreviations in dictation:** Hx (history), Dx (diagnosis), Tx (treatment/therapy), Sx (symptoms), Rx (prescription), cc (chief complaint or cubic centimeter — context tells you which), SOB (shortness of breath), DOE (dyspnea on exertion), HTN (hypertension), DM (diabetes mellitus), URI (upper respiratory infection), UTI (urinary tract infection), PMH (past medical history), FH (family history), SH (social history), ROS (review of systems), PE (physical examination or pulmonary embolism — again, context matters), c/o (complains of), w/o (without), h/o (history of), s/p (status post — meaning after a procedure or event).`,
+
+      `**Your workflow with terminology:** When you hear an unfamiliar term, do not guess. Leave a blank with the timestamp (e.g., "[blank 0:42]") and flag it for review. After you finish the document, consult a medical dictionary or trusted online resource (Merriam-Webster Medical, Stedman's) to verify spelling before submitting. Guessing and getting it wrong is more dangerous than leaving a blank.`,
+    ],
+    keyPoints: [
+      "Break any medical word into prefix + root + suffix to decode its meaning.",
+      "Memorize the 10 most common roots: cardi/o, hepat/o, nephr/o, pulmon/o, gastr/o, neur/o, dermat/o, oste/o, my/o, hem/o.",
+      "Know the difference between similarly spelled terms: ileum (small intestine) vs. ilium (hip bone); pericardium (sac around heart) vs. perineum (pelvic floor area).",
+      "Master Latin/Greek plural rules — incorrect plurals are transcription errors.",
+      "Recognize common abbreviations in context — some abbreviations have two meanings (cc, PE).",
+      "Never guess an unfamiliar term — leave a timestamped blank and flag for review.",
+    ],
+    quiz: [], // filled below
+  },
+
+  // ── Module 2: Anatomy for Transcriptionists ───────────────────────────────
+  {
+    title: "Module 2: Anatomy for Transcriptionists",
+    minutes: 32,
+    summary: "Understand the body planes, directional terms, and organ systems a transcriptionist encounters daily — enough to catch errors without needing a medical degree.",
+    content: [
+      `You do not need to know anatomy at a nurse's level, but you need enough to recognise when something in the dictation sounds anatomically wrong. A doctor who says "the patient has a fracture of the right tibia" while the rest of the note is about the left foot is a red flag — your anatomy knowledge is the safety net that catches it.`,
+
+      `**Directional terms — always from the patient's perspective, not yours.** Anterior (front), posterior (back), medial (toward the body's midline), lateral (away from the midline), superior (toward the head), inferior (toward the feet), proximal (closer to the point of origin), distal (farther from the point of origin). A wound described as "proximal to the elbow" is near the shoulder end of the arm; "distal to the elbow" is near the wrist end.`,
+
+      `**The three body planes:** Sagittal divides the body into left and right halves. Coronal (frontal) divides front and back. Transverse (axial) divides upper and lower. You will hear these most often in imaging reports: "a transverse CT cut at the level of L3" means a horizontal slice at the third lumbar vertebra.`,
+
+      `**Organ systems you will encounter most often in general transcription:**\n• *Cardiovascular:* heart, aorta, coronary arteries, veins, capillaries. Key terms: myocardial infarction (heart attack), angina, arrhythmia, ejection fraction.\n• *Respiratory:* trachea, bronchi, lungs (lobes: upper, middle, lower on the right; upper, lower on the left), pleura. Key terms: pneumonia, pleural effusion, atelectasis, COPD, asthma, SpO₂.\n• *Musculoskeletal:* 206 bones, joints (articular cartilage, synovial fluid), tendons, ligaments, muscles. Key terms: fracture, sprain (ligament), strain (muscle/tendon), arthritis, herniated disc.\n• *Gastrointestinal:* esophagus, stomach, duodenum, small intestine (jejunum, ileum), large intestine (ascending, transverse, descending, sigmoid colon), rectum, liver, gallbladder, pancreas. Key terms: GERD, cholecystitis, diverticulitis, bowel obstruction.\n• *Nervous:* brain, spinal cord, peripheral nerves. Key terms: CVA (stroke), TIA (mini-stroke), neuropathy, paresthesia (numbness/tingling).`,
+
+      `**Commonly confused structures — transcription danger zones:**\n• *Ileum* (small intestine) vs. *ilium* (part of the pelvis — also a bone). They sound identical when dictated quickly.\n• *Ureter* (tube from kidney to bladder) vs. *urethra* (tube from bladder out of body). Mixed up constantly in dictation.\n• *Mucous* (adjective: mucous membrane) vs. *mucus* (noun: the secretion itself).\n• *Pericardium* (sac around the heart) vs. *perineum* (pelvic floor region).\n• *Prostate* (male gland) vs. *prostrate* (lying face down — not a body part but doctors occasionally dictate it incorrectly).`,
+
+      `**Your practical anatomy rule:** If something you typed sounds physically impossible — a lung condition in the abdomen section, a knee joint mentioned in a cardiac note with no context — flag it and leave a note. Anatomy errors in medical records can cause real harm to real patients.`,
+    ],
+    keyPoints: [
+      "Directional terms always describe the patient's body from the patient's perspective.",
+      "Know the three body planes: sagittal (left/right), coronal (front/back), transverse (upper/lower).",
+      "Learn the five organ systems most common in general transcription work.",
+      "Memorise the 'danger zone' pairs that sound alike: ileum/ilium, ureter/urethra, pericardium/perineum.",
+      "Flag any anatomical placement that seems inconsistent with the rest of the document.",
+    ],
+    quiz: [], // filled below
+  },
+
+  // ── Module 3: Doctor's Notes & Report Structure ───────────────────────────
+  {
+    title: "Module 3: Doctor's Notes & Report Structure",
+    minutes: 35,
+    summary: "Master the SOAP note format and the five major report types you will transcribe every day — clinic notes, discharge summaries, operative reports, consult letters, and procedure notes.",
+    content: [
+      `Every medical document follows a predictable structure. Once you know the template, you can follow along even when the dictating physician speaks quickly, because you know what section is coming next. Structure is your roadmap.`,
+
+      `**The SOAP Note — the backbone of ambulatory care:**\n• *Subjective (S):* What the patient says. Chief complaint (CC), History of Present Illness (HPI), Review of Systems (ROS), Past Medical History (PMH), Past Surgical History (PSH), Family History (FH), Social History (SH — smoking, alcohol, occupation, living situation). This section is written in the physician's voice reporting the patient's story.\n• *Objective (O):* What the clinician measures and observes. Vital signs (BP, HR, RR, Temp, SpO₂, weight), physical examination findings by system (HEENT, neck, chest/lungs, cardiovascular, abdomen, extremities, neurological), and results (labs, imaging).\n• *Assessment (A):* The diagnosis or differential diagnosis list. Often numbered: "1. Hypertension, uncontrolled. 2. Type 2 diabetes mellitus. 3. Hyperlipidemia."\n• *Plan (P):* What will be done — medications prescribed, tests ordered, referrals placed, follow-up interval, patient education given.`,
+
+      `**Discharge Summary structure:** Admission date, discharge date, attending physician, admitting diagnosis, discharge diagnosis, hospital course (narrative of what happened during the stay), significant lab and imaging results, procedures performed, condition at discharge, discharge medications (with dosage and instructions), follow-up appointments, and patient education. This document is critical — insurance, legal, and continuity-of-care decisions all depend on it.`,
+
+      `**Operative Report structure:** Pre-operative diagnosis, post-operative diagnosis (may differ if findings were unexpected), name of procedure(s), surgeon(s) and assistants, anesthesia type, indications for procedure, description of procedure (step-by-step narrative), findings, specimens sent to pathology, estimated blood loss (EBL), fluids given, drains placed, complications (or "none"), and condition at close. Pay attention to specimen descriptions — they must match what pathology receives.`,
+
+      `**Radiology Report structure:** Clinical history (why the scan was ordered), technique (modality, views, contrast), comparison (prior studies if available), findings (organ-by-organ description of what is seen), impression (the radiologist's conclusion — the most important section; if a physician reads nothing else, they read the impression). The Impression should directly answer the clinical question.`,
+
+      `**Consultation Letter structure:** Reason for consultation, referring physician, history of present illness, relevant past medical/surgical/family/social history, review of systems, physical examination, relevant data (labs, imaging), assessment and recommendations. A consult letter is a formal document from a specialist back to the referring provider — tone is professional and the recommendations section is the key output.`,
+
+      `**Formatting rules that apply to all report types:** Dates in full format unless the facility style guide says otherwise (January 15, 2024, not 1/15/24). Medication names: generic names are lowercase (metformin), brand names are capitalized (Metformin → metformin is correct; Glucophage is the brand). Dosages follow exact dictation — never round or alter. Headings match the facility's template exactly. If the physician's dictation is unclear on a section boundary, default to the standard structure and flag the timestamp.`,
+    ],
+    keyPoints: [
+      "SOAP = Subjective, Objective, Assessment, Plan — the standard outpatient note format.",
+      "The Discharge Summary is a legal and clinical document; accuracy is critical for every field.",
+      "In an Operative Report, the pre-op and post-op diagnoses may legally differ — transcribe both exactly.",
+      "The Impression section of a Radiology Report is the most clinician-critical part.",
+      "Generic drug names are lowercase; brand names are capitalized.",
+      "Never alter dictated dosages — flag unclear amounts for physician review.",
+    ],
+    quiz: [], // filled below
+  },
+
+  // ── Module 4: HIPAA & Patient Confidentiality ─────────────────────────────
+  {
+    title: "Module 4: HIPAA & Patient Confidentiality",
+    minutes: 25,
+    summary: "Understand the 18 HIPAA identifiers, your obligations as a Business Associate, and the practical security habits that keep you — and your clients — compliant.",
+    content: [
+      `HIPAA (the Health Insurance Portability and Accountability Act of 1996) is federal law. As a transcriptionist you handle Protected Health Information (PHI) every day, which means you are automatically covered by HIPAA's Privacy and Security Rules. Non-compliance can result in civil fines from $100 to $50,000 per violation and criminal charges for knowing misuse. You do not need to be an attorney, but you do need to understand your obligations clearly.`,
+
+      `**The 18 PHI identifiers — information that can identify a patient and must be protected:**\n1. Names\n2. Geographic data smaller than a state (street address, city, ZIP code)\n3. Dates other than year (birthdate, admission date, discharge date, date of death)\n4. Phone numbers\n5. Fax numbers\n6. Email addresses\n7. Social Security numbers\n8. Medical record numbers\n9. Health plan beneficiary numbers\n10. Account numbers\n11. Certificate/license numbers\n12. Vehicle identifiers and serial numbers\n13. Device identifiers and serial numbers\n14. Web URLs\n15. IP addresses\n16. Biometric identifiers (fingerprints, voice prints)\n17. Full-face photographs\n18. Any other unique identifying number or code\nIf a document contains ANY of these alongside health information, it is PHI and must be handled securely.`,
+
+      `**Business Associate Agreements (BAA):** You are a Business Associate of every healthcare provider or facility you work for. Before handling any PHI, you and the covered entity must sign a BAA — a contract that spells out how you will protect the data, what you will do in case of a breach, and how you will dispose of PHI when the work is done. Never start work without a signed BAA. If an employer does not offer one, walk away.`,
+
+      `**The Minimum Necessary Rule:** Only access, use, or disclose the minimum amount of PHI needed to do your job. You are transcribing a specific audio file — you should not be browsing a patient's full record history, requesting files you are not assigned to, or reading reports from other patients out of curiosity. "I was just looking" is not a defense under HIPAA.`,
+
+      `**Practical security habits for a remote transcriptionist:**\n• Use a dedicated, encrypted work computer — not the family shared laptop.\n• Enable full-disk encryption (FileVault on Mac, BitLocker on Windows).\n• Use a VPN when connecting to client systems, especially over public Wi-Fi.\n• Store audio files and transcripts in the secure platform provided by your client — never on personal Google Drive, Dropbox, or iCloud.\n• Use strong, unique passwords and a password manager. Enable MFA on every work account.\n• Lock your screen whenever you step away from your desk.\n• Shred any printed documents containing PHI — do not put them in the recycling bin.\n• Delete audio files from your local machine as soon as you upload the finished transcript, unless your BAA says otherwise.`,
+
+      `**Breach notification:** If you suspect you have had a data breach — your laptop was stolen, you sent a file to the wrong email address, your system was compromised — you must notify the covered entity immediately, even if you are not sure. Under HIPAA, breaches must be reported within 60 days of discovery. Early notification gives the covered entity time to assess the damage and comply with their own reporting obligations. Attempting to hide a breach or "handle it yourself" makes the situation legally much worse.`,
+    ],
+    keyPoints: [
+      "HIPAA applies to you as a Business Associate — always sign a BAA before handling any PHI.",
+      "Memorise the 18 PHI identifiers — if any are in a document, treat it as protected.",
+      "Apply the Minimum Necessary Rule: only access what you need for the specific job.",
+      "Use encrypted storage, a VPN, and a dedicated work device — not personal cloud accounts.",
+      "Report a suspected breach to your client immediately — never try to manage it on your own.",
+    ],
+    quiz: [], // filled below
+  },
+
+  // ── Module 5: Transcription Software & Shortcuts ──────────────────────────
+  {
+    title: "Module 5: Transcription Software & Shortcuts",
+    minutes: 30,
+    summary: "Set up your workstation, master the foot pedal, use text expanders effectively, and learn the platform tools used by hospitals and transcription service organisations.",
+    content: [
+      `Professional medical transcription is done with a specific set of tools — not just Microsoft Word and a media player. Getting your workstation right before you start your first paid job is what separates a smooth workflow from constant frustration.`,
+
+      `**The foot pedal:** This is the single most important piece of hardware for a transcriptionist. A USB transcription foot pedal (Infinity IN-USB-2 and Olympus RS-31H are industry standards) has three pedals: the centre pedal plays the audio, the left pedal rewinds a few seconds, and the right pedal fast-forwards. Your hands never leave the keyboard. The rewind distance is usually configurable in your software — set it to 3–5 seconds to match your natural catch-up pace. Most experienced transcriptionists listen at 80–90% of normal speed to start, then work up to 100% or even 105% as their accuracy improves.`,
+
+      `**Transcription software platforms you will encounter:**\n• *Olympus DSS Player / Olympus Dictation Management System:* common in private practices and small clinics.\n• *Nuance / Dragon Medical One:* the dominant enterprise platform; integrates voice recognition with transcription editing. Many hospital jobs are editing Dragon drafts, not transcribing from raw audio.\n• *Dictaphone ExSpeech / PowerScribe:* older but still found in hospital radiology departments.\n• *nVoq / SpeakWrite / TranscribeMe:* cloud-based platforms used by transcription service organisations (MTSOs). You log in via browser, claim jobs, transcribe, and submit.\n• *InSync / ChartLogic / AdvancedMD:* EHR (Electronic Health Record) systems with built-in dictation modules — you may transcribe directly into structured fields rather than a free-text document.`,
+
+      `**Text expanders save enormous time.** A text expander maps a short abbreviation to a full phrase. You type the shortcut and it immediately expands. Examples:\n• ".sob" → "shortness of breath"\n• ".htn" → "hypertension"\n• ".nkda" → "no known drug allergies"\n• ".vitals" → "Blood pressure: | Heart rate: | Respiratory rate: | Temperature: | Oxygen saturation: |" (with cursor stops at each field)\n• ".hpi" → "HISTORY OF PRESENT ILLNESS\\n"\n• ".norm" → "within normal limits"\nPopular text expander tools: Espanso (free, open-source), PhraseExpress (Windows, free tier), aText (Mac). Set these up before your first job — a well-built expander library can increase your output by 30–40%.`,
+
+      `**Audio quality troubleshooting:** Not all dictation is clean. Background noise, phone audio, accents, and fast speech are normal. Use equalisation settings to boost the mid-range (1–4 kHz), where human voice sits. Noise-cancelling headphones (closed-back, over-ear) make a meaningful difference — studio monitor headphones like Audio-Technica ATH-M50x are popular among transcriptionists. If audio is genuinely unintelligible after adjusting your settings, flag the timestamp and move on — do not guess.`,
+
+      `**Productivity metrics:** Most experienced medical transcriptionists produce 150–250 lines (65-character lines) per hour. A "line" in the industry is 65 keystrokes including spaces. Billing may be per line, per minute of audio, or per report. When evaluating a job offer, calculate your effective hourly rate: if a job pays $0.08/line and you produce 200 lines/hour, that is $16/hour. Track your own production daily to see where you are improving and where audio difficulty is slowing you down.`,
+    ],
+    keyPoints: [
+      "A USB foot pedal is essential — it keeps your hands on the keyboard and dramatically raises output.",
+      "Know the major platforms: Nuance/Dragon Medical One for hospitals, cloud MTSOs for freelance work.",
+      "Build a text expander library before your first job — it can raise output by 30–40%.",
+      "Use closed-back headphones and equalise audio to the 1–4 kHz voice range for difficult dictation.",
+      "Track your lines-per-hour to know your real hourly rate on any per-line job.",
+    ],
+    quiz: [], // filled below
+  },
+
+  // ── Module 6: Editing Voice Recognition Drafts ────────────────────────────
+  {
+    title: "Module 6: Editing Voice Recognition Drafts",
+    minutes: 27,
+    summary: "Learn how to efficiently edit AI-generated transcription drafts — the primary workflow at most hospitals — catching the errors Dragon and similar systems consistently make.",
+    content: [
+      `Most hospital transcription jobs today are not raw transcription — they are medical transcription editing (MTE), also called speech recognition editing or front-end voice recognition editing. The physician dictates, an AI (usually Dragon Medical One) produces a draft in seconds, and your job is to listen to the original audio while reading the draft, correcting errors in real time. It is faster than typing from scratch, but it requires a different mental mode: you must actively listen and read simultaneously, rather than just listening.`,
+
+      `**The editing workflow:**\n1. Open the audio and the AI-generated draft side by side.\n2. Start playback with your foot pedal at a comfortable speed (often 90–100% for editing vs. 75–85% for raw transcription).\n3. Read along with the draft while listening. When the audio and draft diverge, stop, correct, and continue.\n4. Never read ahead of the audio — a correct-looking phrase in the draft might have come from the wrong sentence.`,
+
+      `**The errors Dragon makes — the consistent patterns to watch for:**\n• *Homophones and near-homophones:* "ileum" vs. "ilium", "murmur" vs. "mirror", "discreet" vs. "discrete", "affects" vs. "effects", "principal" vs. "principle". These look correct to a spell-checker but are medically wrong.\n• *Medical term mishearing:* Dragon might transcribe "appendectomy" as "a pen deck to me" or "Lasix" (a diuretic) as "lazy x". These are easy to catch if you are listening.\n• *Proper nouns:* Physician names, city names, patient names (where included by facility policy), drug brand names. Dragon often gets these wrong — it has no context for your specific facility's roster.\n• *Negation dropped:* "no fever" becomes "fever." This is a clinically dangerous error. Always verify negation words (no, not, without, denies) are present when the audio says them.\n• *Numbers and dosages:* "10 milligrams" might become "Tim milligrams" or the decimals might be misplaced — "0.5 mg" vs. "5 mg" is a ten-fold dosage error.\n• *Formatting collapsed:* Dragon often runs numbered lists into a single paragraph. You may need to reformat per the facility's style guide even if the words are correct.`,
+
+      `**When to leave a blank vs. make your best guess:** If you are 95%+ confident in a word, type it. If you are below that threshold, leave a blank with a timestamp: [blank 2:14]. Never submit a guessed word that could be clinically wrong — a wrong drug name, a wrong diagnosis, a wrong body part. The physician review step exists precisely because some things require a clinical decision. Your job is to be accurate, not comprehensive.`,
+
+      `**Flagging protocol:** Most platforms have a flag or "hold for review" function. Use it for: any blank you left, any section where the audio was genuinely unintelligible, any discrepancy between the dictated diagnosis and the rest of the note (e.g., the physician says "left knee" in the HPI but "right knee" in the plan), and any dictation that seems to be from the wrong patient (rare but it happens — physicians occasionally dictate into the wrong file).`,
+
+      `**Speed targets for editing:** A skilled MTE editor can process 400–600 lines per hour — roughly double the raw transcription rate. In the first month of a new account, expect to run at 200–300 lines/hour as you learn the account's physicians, template, and style guide. Speed comes from familiarity. Keep a personal "physician quirks" note document: unusual pronunciations, common shorthand, preferred structure. This is your most valuable professional asset on any account.`,
+    ],
+    keyPoints: [
+      "MTE (editing Dragon drafts) is the dominant hospital workflow — learn to listen and read simultaneously.",
+      "Always verify negation words ('no', 'denies', 'without') — dropped negations are clinically dangerous.",
+      "Homophones and near-homophones (ileum/ilium, murmur/mirror) are Dragon's most common error type.",
+      "Number and dosage errors can be 10× off — always verify against the audio.",
+      "Leave a timestamped blank rather than guessing any word you are not 95%+ confident in.",
+      "A personal 'physician quirks' document is your most valuable long-term professional asset.",
+    ],
+    quiz: [], // filled below
+  },
+
+  // ── Module 7: Specialty Reports (Radiology, Pathology, Operative) ─────────
+  {
+    title: "Module 7: Specialty Reports (Radiology, Path, Op)",
+    minutes: 38,
+    summary: "Dive into the three most specialised report types — radiology, pathology, and operative notes — with the terminology and structure you need to transcribe them accurately.",
+    content: [
+      `Specialty reports are where you earn the higher pay tiers. General clinic notes are relatively straightforward; specialty reports are dense with technical vocabulary, require precise formatting, and leave little room for error. This module covers the three most common specialties in transcription: radiology, pathology, and surgery.`,
+
+      `**Radiology Transcription:**\nYou will transcribe reports dictated by radiologists describing what they see on imaging studies.\n\n*Modalities:*\n• X-ray (plain film): bony structures, air/fluid levels, gross lung disease.\n• CT (computed tomography): cross-sectional images; excellent for bone, solid organs, bleeding, tumours. Often uses contrast (IV or oral) — note the type.\n• MRI (magnetic resonance imaging): soft tissue detail, neurological structures, joints. Protocols include T1, T2, FLAIR, DWI. "FLAIR hyperintensity" is a key phrase in brain MRI.\n• Ultrasound: liver, gallbladder, kidneys, thyroid, obstetric, vascular. Common findings: echogenicity, shadowing, vascularity on Doppler.\n• Nuclear medicine / PET: metabolic activity; key phrase "FDG-avid lesion" (fluorodeoxyglucose uptake = metabolically active, often malignant).\n\n*Structure:* Clinical history → Technique → Comparison → Findings (organ-by-organ) → Impression.\n\n*Critical terms:* mass, lesion, nodule (vague — size/characteristics follow), effusion (fluid in a body cavity), consolidation (airspace filled — often pneumonia), infiltrate, atelectasis (collapsed lung segment), edema, infarct, occlusion.`,
+
+      `**Pathology Transcription:**\nPathologists examine tissue and body fluids removed during surgery or biopsy.\n\n*Structure of a pathology report:*\n• Clinical history (why specimen was taken)\n• Specimen received (what was sent to the lab, how many pieces, fixative used)\n• Gross description (macroscopic appearance — size in three dimensions, colour, consistency, margins)\n• Microscopic description (what is seen under the microscope — cell types, architecture, features)\n• Diagnosis / Final diagnosis (the definitive pathologic conclusion)\n• Comment (optional — additional context, staging information, correlation recommendations)\n\n*Key terminology:* benign vs. malignant, differentiation (well / moderately / poorly differentiated), margins (clear/negative = good; positive = tumour at the cut edge = bad), invasion (capsular, lymphovascular, perineural), necrosis, fibrosis, inflammation (acute = neutrophils, chronic = lymphocytes), dysplasia, carcinoma in situ, staging (pTNM — p = pathologic, T = tumour size, N = nodes, M = metastasis).`,
+
+      `**Operative Report Transcription:**\nOp reports are dictated by the surgeon immediately after surgery.\n\n*Structure:*\n1. Pre-operative diagnosis\n2. Post-operative diagnosis (may differ — the surgeon may find unexpected findings)\n3. Procedure performed\n4. Surgeon(s), assistant(s)\n5. Anaesthesia (general, regional, local, MAC — monitored anaesthesia care)\n6. Indications (why surgery was needed)\n7. Description of procedure (the narrative core — step by step)\n8. Findings (what was actually seen)\n9. Specimens (name and destination — "appendix sent to pathology")\n10. Estimated blood loss (EBL) — in millilitres\n11. Fluids (IV fluids given, blood products)\n12. Drains (type and location if placed)\n13. Complications (or "none")\n14. Condition at close (or "stable to PACU")\n\n*Key vocabulary:* incision (cut into tissue), dissection (separating tissue planes), haemostasis (stopping bleeding), cauterisation/electrocautery, ligation (tying off a vessel), suture (closing tissue — know common sutures: Vicryl, Prolene, PDS, nylon, chromic), stapler (endoscopic stapling device), trocar (port for laparoscopic surgery), insufflation (inflating the abdomen with CO₂ for laparoscopy), anastomosis (joining two hollow structures), resection (removing a segment), lavage (washing out a cavity).`,
+
+      `**A note on staging and grading:** These appear in both pathology and operative reports. "Stage" describes how far a cancer has spread (I through IV, or using pTNM). "Grade" describes how abnormal the cells look (Grade 1 = well differentiated, low-grade; Grade 3/4 = poorly differentiated, high-grade). These distinctions determine treatment — transcribing them incorrectly has direct consequences for the patient's care plan. If staging or grading terminology is unclear in the audio, leave a blank and flag it.`,
+    ],
+    keyPoints: [
+      "Radiology reports always end with an Impression — the most clinician-critical section.",
+      "Know the major imaging modalities: X-ray, CT, MRI, Ultrasound, PET — each has its own vocabulary.",
+      "Pathology reports include gross and microscopic descriptions — both must be transcribed precisely.",
+      "In operative reports, pre-op and post-op diagnoses may legally differ — transcribe both as dictated.",
+      "EBL, specimens, and suture materials in op reports are legally significant — never estimate.",
+      "Cancer staging and grading language determines treatment — flag unclear terms, never guess.",
+    ],
+    quiz: [], // filled below
+  },
+
+  // ── Module 8: Building Your Freelance Practice ────────────────────────────
+  {
+    title: "Module 8: Building Your Freelance Practice",
+    minutes: 33,
+    summary: "Set up a professional home office, find your first clients, price your services correctly, and build a sustainable freelance medical transcription business.",
+    content: [
+      `Medical transcription is one of the most accessible remote healthcare careers — all you need is a computer, a foot pedal, headphones, a quiet workspace, and the skills from this course. This final module covers the business side: where to find work, how to price it, and how to build a professional reputation that generates referrals.`,
+
+      `**Ergonomics and workspace setup:** You will spend 6–8 hours a day at a keyboard. Invest in this correctly:\n• Monitor at eye level (top of screen at or slightly below eye height) to prevent neck strain.\n• Keyboard and mouse at a height where your elbows are at 90° and your wrists are neutral — not bent up or down.\n• Chair with lumbar support, adjustable height.\n• Dedicated quiet room or corner with a door — background noise bleeds into your focus and occasionally into your own recordings if you ever need to communicate with clients by audio.\n• Good headphone comfort matters over 8-hour sessions — over-ear, padded cups, adjustable headband.`,
+
+      `**Where to find transcription work:**\n\n*MTSOs (Medical Transcription Service Organisations):* Companies that aggregate transcription demand from hospitals and clinics and subcontract to independent transcriptionists. They handle client relationships; you handle the work. Examples: MModal, Nuance/Solventum, Ciox/Datavant, Acusis, Amphion, MTSource. Most require a skills test before onboarding. These are the easiest starting point because volume is guaranteed and you do not need to find clients yourself.\n\n*Job boards:* Indeed, LinkedIn, and health IT-specific boards like Health IT Jobs. Search "medical transcription editor" or "speech recognition editor" — MTE roles pay better than raw transcription and are more commonly listed.\n\n*Direct contracts:* Approach small independent physician practices, urgent care clinics, or mental health private practices directly. These clients often cannot afford an MTSO's enterprise pricing and welcome an affordable, direct relationship. Bring a short service description, your rates, a sample BAA (attorney-reviewed), and proof of any relevant training or certification.\n\n*Freelance platforms:* Upwork and similar platforms host medical transcription gigs, but rates are often low and competition is global. Use them to build early reviews, not as a long-term income strategy.`,
+
+      `**Pricing your services:**\nThe industry standard billing unit is the *65-character line* (counting all characters including spaces). Rates:\n• Entry-level / MTSO subcontract: $0.06–$0.08 per line\n• Experienced direct client work: $0.10–$0.14 per line\n• Specialty work (radiology, pathology): $0.12–$0.18 per line\n• Per audio minute: $1.50–$4.00 depending on specialty and turnaround time\n\nWhen pricing, calculate your effective hourly rate. If you produce 250 lines/hour at $0.10/line, that is $25/hour — a solid starting rate. As your speed increases toward 400 lines/hour, the same rate becomes $40/hour. Speed is your lever.\n\nStat (urgent) turnaround (4-hour or same-day) typically commands a 20–50% premium. Establish your standard turnaround as 24 hours and your stat rate clearly in your contract.`,
+
+      `**Building your portfolio and reputation:**\nBefore approaching direct clients, complete at least 2–3 test transcriptions you can show (these can be anonymised practice audio from publicly available medical dictation training resources — there are many on YouTube and training sites). A portfolio demonstrates skill to clients who cannot evaluate transcription quality themselves.\n\nAsk every satisfied client for a brief written testimonial you can display on a simple professional website (a single-page site with your services, rates, BAA process, and contact info is sufficient). Referrals from one physician to their colleagues in the same practice group are the most reliable growth mechanism in this field.`,
+
+      `**Managing taxes and contracts as a contractor:**\nAs an independent contractor you are responsible for:\n• Self-employment tax (15.3% of net earnings in the US — set aside 25–30% of every payment).\n• Quarterly estimated tax payments (due in April, June, September, January).\n• Business expense tracking: foot pedal, headphones, computer (prorated for work use), internet service (prorated), software subscriptions, professional development.\n• A signed contract with every client: services provided, rates, turnaround times, confidentiality obligations, BAA, payment terms (net 14 or net 30), and termination clause.\n\nUse accounting software (Wave — free, or QuickBooks Self-Employed) from your first invoice. Reconstructing a year of transactions at tax time is a nightmare best avoided.`,
+    ],
+    keyPoints: [
+      "Invest in proper ergonomics — neck and wrist injuries are an occupational hazard in high-volume transcription.",
+      "Start with an MTSO to build speed and account familiarity, then add direct client contracts for higher margins.",
+      "Standard billing is per 65-character line ($0.06–$0.14 for general, $0.12–$0.18 for specialty).",
+      "Stat turnaround (4-hour or same-day) commands a 20–50% premium — establish this rate clearly in contracts.",
+      "Sign a contract and BAA with every client before handling any PHI.",
+      "Set aside 25–30% of every payment for taxes and pay quarterly estimates — do not wait until April.",
+    ],
+    quiz: [], // filled below
+  },
+];
+
 const MEDICAL_TRANSCRIPTIONIST_QUIZZES: QuizQuestion[][] = [
   // Module 1: What Is Medical Transcription?
   [
@@ -408,16 +641,10 @@ export const COURSES: Course[] = [
     coursePrice: 19,
     certPrice: 15,
     bundlePrice: 15,
-    tutorials: makeTutorials([
-      "Medical Terminology Foundations",
-      "Anatomy for Transcriptionists",
-      "SOAP Notes & Report Structure",
-      "HIPAA & Patient Confidentiality",
-      "Transcription Software & Shortcuts",
-      "Editing Voice Recognition Drafts",
-      "Specialty Reports (Radiology, Path, Op)",
-      "Building Your Freelance Practice",
-    ]).map((tut, i) => ({ ...tut, quiz: MEDICAL_TRANSCRIPTIONIST_QUIZZES[i] })),
+    tutorials: MEDICAL_TRANSCRIPTIONIST_TUTORIALS.map((tut, i) => ({
+      ...tut,
+      quiz: MEDICAL_TRANSCRIPTIONIST_QUIZZES[i],
+    })),
     examQuestions: 15,
   },
   {
