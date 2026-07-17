@@ -19,7 +19,7 @@ export function SiteHeader() {
             Certifications
           </Link>
           <Link to="/pricing" className="text-muted-foreground hover:text-foreground [&.active]:text-foreground [&.active]:font-medium">
-            Pricing
+            Find Cert
           </Link>
         </nav>
       </div>
@@ -35,7 +35,7 @@ export function SiteFooter() {
         <div className="flex gap-4">
           <Link to="/courses" className="hover:text-foreground">Courses</Link>
           <Link to="/certifications" className="hover:text-foreground">Certifications</Link>
-          <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
+          <Link to="/pricing" className="hover:text-foreground">Find Cert</Link>
         </div>
       </div>
     </footer>

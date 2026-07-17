@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/server/db";
 import { certificates } from "@/server/schema";
@@ -32,4 +32,45 @@ export const verifyCertificate = createServerFn({ method: "GET" })
       courseTitle: certificate.courseTitle,
       issuedAt: certificate.issuedAt.toISOString(),
     };
+  });
+
+// ─── Certificate recovery ─────────────────────────────────────────────────────
+// Lets someone recover a lost cert URL by searching with their name or email.
+// Email → exact match (privacy). Name → case-insensitive partial match.
+const lookupSchema = z.object({
+  query: z.string().trim().min(2),
+});
+
+export const lookupCertsByContact = createServerFn({ method: "GET" })
+  .validator((data: unknown) => lookupSchema.parse(data))
+  .handler(async ({ data }) => {
+    const q = data.query.trim();
+    const isEmail = q.includes("@");
+
+    const rows = await db
+      .select({
+        code: certificates.code,
+        courseSlug: certificates.courseSlug,
+        courseTitle: certificates.courseTitle,
+        recipientName: certificates.recipientName,
+        issuedAt: certificates.issuedAt,
+      })
+      .from(certificates)
+      .where(
+        and(
+          isEmail
+            ? eq(certificates.email, q.toLowerCase())
+            : ilike(certificates.recipientName, `%${q}%`),
+          eq(certificates.revoked, false),
+        ),
+      )
+      .limit(20);
+
+    return rows.map((r) => ({
+      code: r.code,
+      courseSlug: r.courseSlug,
+      courseTitle: r.courseTitle,
+      recipientName: r.recipientName,
+      issuedAt: r.issuedAt.toISOString(),
+    }));
   });

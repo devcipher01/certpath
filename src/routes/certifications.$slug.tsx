@@ -165,9 +165,9 @@ function CertPage() {
         <div className="mt-6 rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
           Prefer to learn first?{" "}
           <Link to="/courses/$slug" params={{ slug: course.slug }} className="font-medium text-primary hover:underline">
-            Take the {course.title} course
-          </Link>{" "}
-          — or grab the bundle for ${course.bundlePrice}.
+            Take the full {course.title} course
+          </Link>
+          {" "}and get the skills before the credential.
         </div>
       </main>
       <SiteFooter />

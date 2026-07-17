@@ -16,10 +16,18 @@ export async function downloadCertAsImage(filename = "certificate.png"): Promise
   const node = document.getElementById("cert-print-target");
   if (!node) throw new Error("Certificate element not found on page.");
 
+  // Add a small margin so box-shadows and the faux drop-shadow are not clipped
+  // at the element's offsetWidth/offsetHeight boundary.
+  const margin = 12;
   const dataUrl = await (toPng as (n: HTMLElement, o?: object) => Promise<string>)(node, {
     pixelRatio: 3,           // 3× resolution → sharp when printed or shared
     cacheBust: true,         // avoid stale cached images
-    backgroundColor: "#fffaf2", // match the cert background; no transparent edges
+    backgroundColor: "#ffffff",
+    width: node.offsetWidth + margin * 2,
+    height: node.offsetHeight + margin * 2,
+    style: {
+      margin: `${margin}px`,   // centres the element on the larger canvas
+    },
   });
 
   const link = document.createElement("a");
