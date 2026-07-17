@@ -173,6 +173,10 @@ export const finalizeCheckout = createServerFn({ method: "GET" })
 
     // Verify the payment with Whop — do not trust the redirect alone.
     const companyId = getCompanyId();
+
+    let whopOrderId: string | null = null;
+
+    // ── 1. Check payments API (covers all paid plans) ──────────────────────
     const paymentsResp = await callWhop<{
       data: Array<{ id: string; status: string; amount?: number }>;
     }>(
@@ -180,26 +184,48 @@ export const finalizeCheckout = createServerFn({ method: "GET" })
       `api/v1/payments?company_id=${companyId}&checkout_configuration_ids[]=${pending.whopCheckoutConfigId}`,
     );
 
-    // Only accept explicit terminal-success statuses. Whop uses "paid" for
-    // settled one-time payments; "succeeded" is included defensively in case
-    // of API version variation. Any other status (pending, created, failed,
-    // refunded, voided, disputed …) is treated as not yet settled.
     const SETTLED_STATUSES = new Set(["paid", "succeeded"]);
     const payment = (paymentsResp.data ?? []).find((p) => SETTLED_STATUSES.has(p.status));
 
-    if (!payment) {
-      throw new Error(
-        "Payment not yet confirmed by Whop. Please wait a moment, then refresh this page.",
-      );
+    if (payment) {
+      // Defense-in-depth: verify the settled amount matches what we expect.
+      const expectedCents = pending.amountCents;
+      const paidCents = Math.round((payment.amount ?? 0) * 100);
+      if (paidCents > 0 && paidCents !== expectedCents) {
+        throw new Error(
+          `Payment amount mismatch (expected ${(expectedCents / 100).toFixed(2)}, got ${(paidCents / 100).toFixed(2)}). Contact support.`,
+        );
+      }
+      whopOrderId = payment.id;
     }
 
-    // Defense-in-depth: verify the settled amount matches what we expect.
-    // Whop returns amounts in decimal dollars; pending stores cents.
-    const expectedCents = pending.amountCents;
-    const paidCents = Math.round((payment.amount ?? 0) * 100);
-    if (paidCents > 0 && paidCents !== expectedCents) {
+    // ── 2. Fallback: check memberships (covers $0 / free plans) ───────────
+    // Whop skips creating a payment record for free plans and goes straight
+    // to creating a membership. Query by plan_id and match on the checkout
+    // configuration ID stored in the membership.
+    if (!whopOrderId) {
+      const membershipsResp = await callWhop<{
+        data: Array<{ id: string; status: string; checkout_configuration_id: string | null }>;
+      }>(
+        "GET",
+        `api/v1/memberships?company_id=${companyId}&plan_ids[]=${pending.whopPlanId}&first=20`,
+      );
+
+      const ACTIVE_STATUSES = new Set(["active", "trialing", "past_due", "completed"]);
+      const membership = (membershipsResp.data ?? []).find(
+        (m) =>
+          m.checkout_configuration_id === pending.whopCheckoutConfigId &&
+          ACTIVE_STATUSES.has(m.status),
+      );
+
+      if (membership) {
+        whopOrderId = membership.id;
+      }
+    }
+
+    if (!whopOrderId) {
       throw new Error(
-        `Payment amount mismatch (expected ${(expectedCents / 100).toFixed(2)}, got ${(paidCents / 100).toFixed(2)}). Contact support.`,
+        "Payment not yet confirmed by Whop. Please wait a moment, then refresh this page.",
       );
     }
 
@@ -215,7 +241,7 @@ export const finalizeCheckout = createServerFn({ method: "GET" })
         email: pending.email,
         amountCents: pending.amountCents,
         whopPlanId: pending.whopPlanId,
-        whopOrderId: payment.id,
+        whopOrderId,
       })
       .returning();
 
