@@ -35,21 +35,29 @@ function CodeBlock({ code, lang = "bash" }: { code: string; lang?: string }) {
   );
 }
 
-const BASE = "https://certpath-gold.vercel.app";
+const FALLBACK_BASE = "https://certpath-gold.vercel.app";
 
 // ── Example snippets ─────────────────────────────────────────────────────────
 
-const CERT_URL = `${BASE}/certificate/medical-transcriptionist/jane-doe?code=CERTPATH-A1B2-C3D4`;
+// These are functions so they're called inside the component at render time,
+// where window.location.origin is always correct regardless of domain.
+function getBase() {
+  return typeof window !== "undefined" ? window.location.origin : FALLBACK_BASE;
+}
 
-const curlByCode  = `curl "${BASE}/api/verify?code=CERTPATH-A1B2-C3D4"`;
-const curlByUrl   = `curl "${BASE}/api/verify?url=${encodeURIComponent(CERT_URL)}"`;
-const curlExample = `# Option 1 — by certificate code
-${curlByCode}
+// All snippet builders accept `base` so they're called inside the component
+// at render time — window.location.origin is always correct there.
+
+function buildSnippets(base: string) {
+  const certUrl = `${base}/certificate/medical-transcriptionist/jane-doe?code=CERTPATH-A1B2-C3D4`;
+
+  const curlExample = `# Option 1 — by certificate code
+curl "${base}/api/verify?code=CERTPATH-A1B2-C3D4"
 
 # Option 2 — by certificate profile URL
-${curlByUrl}`;
+curl "${base}/api/verify?url=${encodeURIComponent(certUrl)}"`;
 
-const successResponse = `{
+  const successResponse = `{
   "valid": true,
   "code": "CERTPATH-A1B2-C3D4",
   "recipientName": "Jane Doe",
@@ -57,16 +65,16 @@ const successResponse = `{
   "courseSlug": "medical-transcriptionist",
   "issuedAt": "2026-07-19T10:30:00.000Z",
   "verifiedAt": "2026-07-19T14:05:22.000Z",
-  "profileUrl": "${CERT_URL}"
+  "profileUrl": "${certUrl}"
 }`;
 
-const failResponse = `{
+  const failResponse = `{
   "valid": false,
   "code": "CERTPATH-XXXX-XXXX",
   "error": "No certificate found with that code."
 }`;
 
-const jsExample = `// Pass either the certificate code OR the full profile URL —
+  const jsExample = `// Pass either the certificate code OR the full profile URL —
 // both are accepted by the same endpoint.
 
 async function verifyCertPath({ code, url }) {
@@ -74,7 +82,7 @@ async function verifyCertPath({ code, url }) {
     ? \`code=\${encodeURIComponent(code)}\`
     : \`url=\${encodeURIComponent(url)}\`;
 
-  const res  = await fetch(\`${BASE}/api/verify?\${params}\`);
+  const res  = await fetch(\`${base}/api/verify?\${params}\`);
   const data = await res.json();
 
   if (data.valid) {
@@ -91,15 +99,15 @@ async function verifyCertPath({ code, url }) {
 
 // Usage examples:
 verifyCertPath({ code: "CERTPATH-A1B2-C3D4" });
-verifyCertPath({ url: "${CERT_URL}" });`;
+verifyCertPath({ url: "${certUrl}" });`;
 
-const pythonExample = `import requests
+  const pythonExample = `import requests
 from datetime import datetime
 
 def verify_certpath(*, code: str = "", url: str = "") -> dict:
     """Pass either code= or url= (full certificate profile URL)."""
     params = {"code": code} if code else {"url": url}
-    resp = requests.get("${BASE}/api/verify", params=params, timeout=10)
+    resp = requests.get("${base}/api/verify", params=params, timeout=10)
     resp.raise_for_status()
     data = resp.json()
 
@@ -113,9 +121,9 @@ def verify_certpath(*, code: str = "", url: str = "") -> dict:
 
 # Usage examples:
 verify_certpath(code="CERTPATH-A1B2-C3D4")
-verify_certpath(url="${CERT_URL}")`;
+verify_certpath(url="${certUrl}")`;
 
-const phpExample = `<?php
+  const phpExample = `<?php
 /**
  * Verify a CertPath certificate by code or by profile URL.
  * Pass exactly one of: $code or $profileUrl
@@ -125,7 +133,7 @@ function verifyCertPath(string $code = "", string $profileUrl = ""): array {
         ? http_build_query(["code" => $code])
         : http_build_query(["url"  => $profileUrl]);
 
-    $response = file_get_contents("${BASE}/api/verify?" . $param);
+    $response = file_get_contents("${base}/api/verify?" . $param);
     $data = json_decode($response, true);
 
     if ($data["valid"]) {
@@ -138,18 +146,18 @@ function verifyCertPath(string $code = "", string $profileUrl = ""): array {
 
 // Usage examples:
 verifyCertPath(code: "CERTPATH-A1B2-C3D4");
-verifyCertPath(profileUrl: "${CERT_URL}");`;
+verifyCertPath(profileUrl: "${certUrl}");`;
 
-const embedExample = `<!-- Drop this snippet anywhere on your page.
+  const embedExample = `<!-- Drop this snippet anywhere on your page.
      Works with either the code or the full certificate URL. -->
 <div id="certpath-badge"></div>
 
 <script>
   (async () => {
     // Use the certificate URL your user submitted to you
-    const certUrl = "${CERT_URL}";
+    const certUrl = "${certUrl}";
     const res  = await fetch(
-      \`${BASE}/api/verify?url=\${encodeURIComponent(certUrl)}\`
+      \`${base}/api/verify?url=\${encodeURIComponent(certUrl)}\`
     );
     const cert = await res.json();
     const el   = document.getElementById("certpath-badge");
@@ -175,8 +183,16 @@ const embedExample = `<!-- Drop this snippet anywhere on your page.
   })();
 </script>`;
 
+  return { curlExample, successResponse, failResponse, jsExample, pythonExample, phpExample, embedExample };
+}
+
 function ApiDocsPage() {
   const [tab, setTab] = useState<"curl" | "js" | "python" | "php" | "embed">("curl");
+
+  // Computed at render time so window.location.origin is always the live domain.
+  const base = getBase();
+  const { curlExample, successResponse, failResponse, jsExample, pythonExample, phpExample, embedExample } =
+    buildSnippets(base);
 
   const tabs: { id: typeof tab; label: string }[] = [
     { id: "curl", label: "cURL" },
@@ -216,7 +232,7 @@ function ApiDocsPage() {
           <h2 className="mb-3 text-lg font-semibold">Endpoint</h2>
           <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
             <span className="rounded bg-emerald-500/15 px-2 py-0.5 text-xs font-bold text-emerald-700">GET</span>
-            <code className="text-sm text-foreground">{BASE}/api/verify</code>
+            <code className="text-sm text-foreground">{base}/api/verify</code>
           </div>
         </section>
 
@@ -245,7 +261,7 @@ function ApiDocsPage() {
                   <td className="px-4 py-3"><code className="font-mono font-medium text-foreground">url</code></td>
                   <td className="px-4 py-3 text-muted-foreground">string</td>
                   <td className="px-4 py-3 font-medium text-amber-600">One of</td>
-                  <td className="px-4 py-3 text-muted-foreground">The full certificate profile URL (e.g. <code>{BASE}/certificate/course/name?code=…</code>). The code is extracted automatically.</td>
+                  <td className="px-4 py-3 text-muted-foreground">The full certificate profile URL (e.g. <code>{base}/certificate/course/name?code=…</code>). The code is extracted automatically.</td>
                 </tr>
               </tbody>
             </table>
@@ -327,7 +343,7 @@ function ApiDocsPage() {
             <li><strong>CORS:</strong> All origins are allowed — call this endpoint directly from browser JavaScript.</li>
             <li><strong>Authentication:</strong> None required. The API is intentionally public — certificates are designed to be shareable credentials.</li>
             <li><strong>Rate limiting:</strong> Please keep requests reasonable. Batch lookups aren't supported; query one certificate code per request.</li>
-            <li><strong>Two ways to verify:</strong> pass <code>?code=CERTPATH-XXXX</code> or the full <code>?url=https://certpath-gold.vercel.app/certificate/…</code> — the code is extracted from the URL automatically.</li>
+            <li><strong>Two ways to verify:</strong> pass <code>?code=CERTPATH-XXXX</code> or the full <code>?url={base}/certificate/…</code> — the code is extracted from the URL automatically.</li>
             <li><strong>Codes are case-insensitive:</strong> <code>certpath-a1b2-c3d4</code> and <code>CERTPATH-A1B2-C3D4</code> both work.</li>
           </ul>
         </section>
