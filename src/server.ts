@@ -50,14 +50,40 @@ async function handleVerifyApi(request: Request): Promise<Response | null> {
     return apiJson({ valid: false, error: "Method not allowed. Use GET." }, 405);
   }
 
-  const code = url.searchParams.get("code")?.trim().toUpperCase() ?? "";
+  // Accept either ?code=CERTPATH-XXXX or ?url=https://certpath-gold.vercel.app/certificate/...
+  let code = url.searchParams.get("code")?.trim().toUpperCase() ?? "";
+
+  if (!code) {
+    const rawUrl = url.searchParams.get("url")?.trim() ?? "";
+    if (rawUrl) {
+      try {
+        const parsed = new URL(rawUrl);
+        // Code is always in the ?code= query param of the certificate URL
+        code = parsed.searchParams.get("code")?.trim().toUpperCase() ?? "";
+        if (!code) {
+          return apiJson(
+            {
+              valid: false,
+              error: "The provided URL does not contain a certificate code. Make sure you're using the full certificate URL (e.g. /certificate/course/name?code=CERTPATH-XXXX).",
+            },
+            400,
+          );
+        }
+      } catch {
+        return apiJson({ valid: false, error: "Invalid URL provided." }, 400);
+      }
+    }
+  }
 
   if (!code) {
     return apiJson(
       {
         valid: false,
-        error: "Missing required query parameter: code",
-        usage: "GET /api/verify?code=CERTPATH-XXXX-XXXX",
+        error: "Missing required parameter: provide either `code` or `url`.",
+        usage: [
+          "By code: GET /api/verify?code=CERTPATH-XXXX-XXXX",
+          "By URL:  GET /api/verify?url=https://certpath-gold.vercel.app/certificate/course/name?code=CERTPATH-XXXX-XXXX",
+        ],
       },
       400,
     );

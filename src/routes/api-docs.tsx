@@ -37,7 +37,17 @@ function CodeBlock({ code, lang = "bash" }: { code: string; lang?: string }) {
 
 const BASE = "https://certpath-gold.vercel.app";
 
-const curlExample = `curl "${BASE}/api/verify?code=CERTPATH-XXXX-XXXX"`;
+// ── Example snippets ─────────────────────────────────────────────────────────
+
+const CERT_URL = `${BASE}/certificate/medical-transcriptionist/jane-doe?code=CERTPATH-A1B2-C3D4`;
+
+const curlByCode  = `curl "${BASE}/api/verify?code=CERTPATH-A1B2-C3D4"`;
+const curlByUrl   = `curl "${BASE}/api/verify?url=${encodeURIComponent(CERT_URL)}"`;
+const curlExample = `# Option 1 — by certificate code
+${curlByCode}
+
+# Option 2 — by certificate profile URL
+${curlByUrl}`;
 
 const successResponse = `{
   "valid": true,
@@ -47,7 +57,7 @@ const successResponse = `{
   "courseSlug": "medical-transcriptionist",
   "issuedAt": "2026-07-19T10:30:00.000Z",
   "verifiedAt": "2026-07-19T14:05:22.000Z",
-  "profileUrl": "${BASE}/certificate/medical-transcriptionist/jane-doe?code=CERTPATH-A1B2-C3D4"
+  "profileUrl": "${CERT_URL}"
 }`;
 
 const failResponse = `{
@@ -56,32 +66,40 @@ const failResponse = `{
   "error": "No certificate found with that code."
 }`;
 
-const jsExample = `async function verifyCertPath(code) {
-  const res = await fetch(
-    \`${BASE}/api/verify?code=\${encodeURIComponent(code)}\`
-  );
+const jsExample = `// Pass either the certificate code OR the full profile URL —
+// both are accepted by the same endpoint.
+
+async function verifyCertPath({ code, url }) {
+  const params = code
+    ? \`code=\${encodeURIComponent(code)}\`
+    : \`url=\${encodeURIComponent(url)}\`;
+
+  const res  = await fetch(\`${BASE}/api/verify?\${params}\`);
   const data = await res.json();
 
   if (data.valid) {
     console.log(\`✓ Verified: \${data.recipientName}\`);
     console.log(\`  Course:   \${data.courseTitle}\`);
     console.log(\`  Issued:   \${data.issuedAt}\`);
+    console.log(\`  Profile:  \${data.profileUrl}\`);
   } else {
     console.log(\`✗ Invalid: \${data.error}\`);
   }
 
   return data;
-}`;
+}
+
+// Usage examples:
+verifyCertPath({ code: "CERTPATH-A1B2-C3D4" });
+verifyCertPath({ url: "${CERT_URL}" });`;
 
 const pythonExample = `import requests
 from datetime import datetime
 
-def verify_certpath(code: str) -> dict:
-    resp = requests.get(
-        "${BASE}/api/verify",
-        params={"code": code},
-        timeout=10,
-    )
+def verify_certpath(*, code: str = "", url: str = "") -> dict:
+    """Pass either code= or url= (full certificate profile URL)."""
+    params = {"code": code} if code else {"url": url}
+    resp = requests.get("${BASE}/api/verify", params=params, timeout=10)
     resp.raise_for_status()
     data = resp.json()
 
@@ -91,12 +109,23 @@ def verify_certpath(code: str) -> dict:
     else:
         print(f"✗ {data['error']}")
 
-    return data`;
+    return data
+
+# Usage examples:
+verify_certpath(code="CERTPATH-A1B2-C3D4")
+verify_certpath(url="${CERT_URL}")`;
 
 const phpExample = `<?php
-function verifyCertPath(string $code): array {
-    $url = "${BASE}/api/verify?" . http_build_query(["code" => $code]);
-    $response = file_get_contents($url);
+/**
+ * Verify a CertPath certificate by code or by profile URL.
+ * Pass exactly one of: $code or $profileUrl
+ */
+function verifyCertPath(string $code = "", string $profileUrl = ""): array {
+    $param = $code
+        ? http_build_query(["code" => $code])
+        : http_build_query(["url"  => $profileUrl]);
+
+    $response = file_get_contents("${BASE}/api/verify?" . $param);
     $data = json_decode($response, true);
 
     if ($data["valid"]) {
@@ -104,18 +133,24 @@ function verifyCertPath(string $code): array {
     } else {
         echo "✗ {$data['error']}\\n";
     }
-
     return $data;
-}`;
+}
 
-const embedExample = `<!-- Drop this snippet anywhere on your page -->
+// Usage examples:
+verifyCertPath(code: "CERTPATH-A1B2-C3D4");
+verifyCertPath(profileUrl: "${CERT_URL}");`;
+
+const embedExample = `<!-- Drop this snippet anywhere on your page.
+     Works with either the code or the full certificate URL. -->
 <div id="certpath-badge"></div>
 
 <script>
   (async () => {
-    // Replace with the code from the certificate
-    const code = "CERTPATH-A1B2-C3D4";
-    const res  = await fetch(\`${BASE}/api/verify?code=\${code}\`);
+    // Use the certificate URL your user submitted to you
+    const certUrl = "${CERT_URL}";
+    const res  = await fetch(
+      \`${BASE}/api/verify?url=\${encodeURIComponent(certUrl)}\`
+    );
     const cert = await res.json();
     const el   = document.getElementById("certpath-badge");
 
@@ -130,8 +165,12 @@ const embedExample = `<!-- Drop this snippet anywhere on your page -->
                stroke="#059669" stroke-width="2.5">
             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          <span style="color:#065f46">Verified: \${cert.courseTitle}</span>
+          <span style="color:#065f46">
+            ✓ Verified: \${cert.recipientName} · \${cert.courseTitle}
+          </span>
         </a>\`;
+    } else {
+      el.textContent = "Certificate could not be verified.";
     }
   })();
 </script>`;
@@ -183,7 +222,8 @@ function ApiDocsPage() {
 
         {/* Parameters */}
         <section className="mb-10">
-          <h2 className="mb-3 text-lg font-semibold">Query parameters</h2>
+          <h2 className="mb-1 text-lg font-semibold">Query parameters</h2>
+          <p className="mb-3 text-sm text-muted-foreground">Supply <strong>one</strong> of the two parameters below — you don't need both.</p>
           <div className="overflow-hidden rounded-lg border border-border">
             <table className="w-full text-sm">
               <thead className="bg-muted">
@@ -198,8 +238,14 @@ function ApiDocsPage() {
                 <tr>
                   <td className="px-4 py-3"><code className="font-mono font-medium text-foreground">code</code></td>
                   <td className="px-4 py-3 text-muted-foreground">string</td>
-                  <td className="px-4 py-3 text-emerald-600 font-medium">Yes</td>
+                  <td className="px-4 py-3 font-medium text-amber-600">One of</td>
                   <td className="px-4 py-3 text-muted-foreground">The validation code printed on the certificate (e.g. <code>CERTPATH-A1B2-C3D4</code>)</td>
+                </tr>
+                <tr className="bg-muted/30">
+                  <td className="px-4 py-3"><code className="font-mono font-medium text-foreground">url</code></td>
+                  <td className="px-4 py-3 text-muted-foreground">string</td>
+                  <td className="px-4 py-3 font-medium text-amber-600">One of</td>
+                  <td className="px-4 py-3 text-muted-foreground">The full certificate profile URL (e.g. <code>{BASE}/certificate/course/name?code=…</code>). The code is extracted automatically.</td>
                 </tr>
               </tbody>
             </table>
@@ -281,6 +327,7 @@ function ApiDocsPage() {
             <li><strong>CORS:</strong> All origins are allowed — call this endpoint directly from browser JavaScript.</li>
             <li><strong>Authentication:</strong> None required. The API is intentionally public — certificates are designed to be shareable credentials.</li>
             <li><strong>Rate limiting:</strong> Please keep requests reasonable. Batch lookups aren't supported; query one certificate code per request.</li>
+            <li><strong>Two ways to verify:</strong> pass <code>?code=CERTPATH-XXXX</code> or the full <code>?url=https://certpath-gold.vercel.app/certificate/…</code> — the code is extracted from the URL automatically.</li>
             <li><strong>Codes are case-insensitive:</strong> <code>certpath-a1b2-c3d4</code> and <code>CERTPATH-A1B2-C3D4</code> both work.</li>
           </ul>
         </section>
