@@ -36,6 +36,7 @@ export function SiteFooter() {
           <Link to="/courses" className="hover:text-foreground">Courses</Link>
           <Link to="/certifications" className="hover:text-foreground">Certifications</Link>
           <Link to="/pricing" className="hover:text-foreground">Find Cert</Link>
+          <Link to="/api-docs" className="hover:text-foreground">API</Link>
         </div>
       </div>
     </footer>
