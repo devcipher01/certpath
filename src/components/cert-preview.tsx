@@ -97,7 +97,7 @@ export function CertPreview({
 
       {!hideNote && (
         <p className="mt-2 text-center text-xs text-muted-foreground">
-          Preview — your certificate will be delivered as a downloadable PNG.
+           Preview — print this certificate or save it as a PDF.
         </p>
       )}
     </div>

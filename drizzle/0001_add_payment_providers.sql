@@ -1,0 +1,11 @@
+ALTER TABLE "orders" ADD COLUMN "country" text DEFAULT 'US' NOT NULL;
+ALTER TABLE "orders" ADD COLUMN "currency" text DEFAULT 'USD' NOT NULL;
+ALTER TABLE "orders" ADD COLUMN "payment_provider" text DEFAULT 'whop' NOT NULL;
+ALTER TABLE "orders" ADD COLUMN "payment_reference" text;
+ALTER TABLE "orders" ALTER COLUMN "whop_plan_id" DROP NOT NULL;
+ALTER TABLE "pending_checkouts" ADD COLUMN "country" text DEFAULT 'US' NOT NULL;
+ALTER TABLE "pending_checkouts" ADD COLUMN "currency" text DEFAULT 'USD' NOT NULL;
+ALTER TABLE "pending_checkouts" ADD COLUMN "payment_provider" text DEFAULT 'whop' NOT NULL;
+ALTER TABLE "pending_checkouts" ADD COLUMN "payment_reference" text;
+ALTER TABLE "pending_checkouts" ALTER COLUMN "whop_plan_id" DROP NOT NULL;
+ALTER TABLE "pending_checkouts" ALTER COLUMN "whop_checkout_config_id" DROP NOT NULL;

@@ -2,6 +2,7 @@
 // and verified server-side (see src/server/functions/checkout.ts and
 // src/server/functions/certificates.ts) against the database — this file
 // only builds the pretty, shareable URL once a code is known.
+import { CANONICAL_SITE_ORIGIN } from "@/lib/site";
 
 /** Turns a person's name into a URL-safe slug, e.g. "Ada Lovelace" -> "ada-lovelace". */
 export function slugifyName(name: string): string {
@@ -16,5 +17,5 @@ export function slugifyName(name: string): string {
 /** Builds the shareable "view your certificate online" URL for an already-issued code. */
 export function certificateUrl({ slug, name, code }: { slug: string; name: string; code: string }): string {
   const params = new URLSearchParams({ code });
-  return `/certificate/${slug}/${slugifyName(name)}?${params.toString()}`;
+  return `${CANONICAL_SITE_ORIGIN}/certificate/${slug}/${slugifyName(name)}?${params.toString()}`;
 }

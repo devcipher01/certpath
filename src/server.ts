@@ -3,6 +3,7 @@ import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { Pool } from "pg";
+import { CANONICAL_SITE_ORIGIN } from "@/lib/site";
 
 // ── Public certificate verification API ──────────────────────────────────────
 // Intercepted here before TanStack router so it never touches the SSR pipeline.
@@ -109,11 +110,10 @@ async function handleVerifyApi(request: Request): Promise<Response | null> {
       return apiJson({ valid: false, code, error: "This certificate has been revoked." });
     }
 
-    const origin = `${url.protocol}//${url.host}`;
     const nameSlug = (cert.recipient_name as string)
       .toLowerCase()
       .replace(/\s+/g, "-");
-    const profileUrl = `${origin}/certificate/${cert.course_slug}/${nameSlug}?code=${cert.code}`;
+    const profileUrl = `${CANONICAL_SITE_ORIGIN}/certificate/${cert.course_slug}/${nameSlug}?code=${cert.code}`;
 
     return apiJson({
       valid: true,

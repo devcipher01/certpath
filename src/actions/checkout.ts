@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestUrl } from "@tanstack/start-server-core";
 import crypto from "node:crypto";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -8,6 +7,9 @@ import { certificates, orders, pendingCheckouts } from "@/server/schema";
 import { getCourse } from "@/data/courses";
 import { getWhopPlanId } from "@/data/whop-plans";
 import { callWhop, getCompanyId } from "@/server/whopClient";
+import { callPaystack } from "@/server/paystackClient";
+import { CANONICAL_SITE_ORIGIN } from "@/lib/site";
+import { usdToNgn } from "@/data/payment";
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -53,21 +55,22 @@ async function mintCertificate(args: {
   throw new Error("Could not generate a unique certificate code after several attempts.");
 }
 
-// ── createWhopCheckout ─────────────────────────────────────────────────────
-// Step 1 of the checkout flow: create a pending record and a Whop checkout
-// configuration, then return the Whop-hosted payment URL.
+// ── createCheckout ─────────────────────────────────────────────────────────
+// Step 1 of the checkout flow. Nigerian buyers use Paystack in NGN; every
+// other country uses the existing Whop USD checkout.
 
-const createWhopCheckoutSchema = z.object({
+const createCheckoutSchema = z.object({
   courseSlug: z.string().min(1),
   plan: z.enum(["cert", "course", "bundle"]),
   route: z.enum(["exam", "attest"]).optional(),
   name: z.string().trim().min(1).max(120),
   email: z.string().trim().email(),
+  country: z.string().trim().length(2).toUpperCase().default("US"),
   examScore: z.number().int().min(0).max(100).optional(),
 });
 
-export const createWhopCheckout = createServerFn({ method: "POST" })
-  .validator((data: unknown) => createWhopCheckoutSchema.parse(data))
+export const createCheckout = createServerFn({ method: "POST" })
+  .validator((data: unknown) => createCheckoutSchema.parse(data))
   .handler(async ({ data }) => {
     const course = getCourse(data.courseSlug);
     if (!course) throw new Error(`Unknown course: ${data.courseSlug}`);
@@ -79,24 +82,58 @@ export const createWhopCheckout = createServerFn({ method: "POST" })
           ? course.bundlePrice
           : course.certPrice;
 
-    const whopPlanId = getWhopPlanId(data.plan, amountDollars);
-
     // Unique opaque token — used as the redirect URL key so we can look up the
     // pending checkout on return without exposing any internal IDs.
     const token = crypto.randomBytes(24).toString("base64url");
+    const isNigeria = data.country === "NG";
+    const currency = isNigeria ? "NGN" : "USD";
+    const amountCents = isNigeria ? usdToNgn(amountDollars) * 100 : Math.round(amountDollars * 100);
 
-    // Derive the return URL. On Vercel, VERCEL_URL is the canonical deployment
-    // host; fall back to the incoming request origin for dev / other platforms.
-    let origin: string;
-    try {
-      const vercelUrl = process.env.VERCEL_URL; // e.g. "my-app.vercel.app"
-      origin = vercelUrl ? `https://${vercelUrl}` : new URL(getRequestUrl()).origin;
-    } catch {
-      origin = new URL(getRequestUrl()).origin;
+    if (isNigeria) {
+      const checkoutResp = await callPaystack<{
+        status: boolean;
+        message: string;
+        data?: { authorization_url: string; reference: string };
+      }>("POST", "transaction/initialize", {
+        email: data.email,
+        amount: amountCents,
+        currency,
+        reference: token,
+        callback_url: `${CANONICAL_SITE_ORIGIN}/checkout/return?token=${encodeURIComponent(token)}`,
+        metadata: {
+          courseSlug: course.slug,
+          plan: data.plan,
+          name: data.name,
+          country: data.country,
+        },
+      });
+
+      if (!checkoutResp.status || !checkoutResp.data?.authorization_url) {
+        throw new Error(`Paystack did not return a valid checkout URL. ${checkoutResp.message ?? ""}`.trim());
+      }
+
+      await db.insert(pendingCheckouts).values({
+        token,
+        courseSlug: course.slug,
+        courseTitle: course.title,
+        plan: data.plan,
+        route: data.route ?? null,
+        name: data.name,
+        email: data.email,
+        amountCents,
+        country: data.country,
+        currency,
+        paymentProvider: "paystack",
+        paymentReference: checkoutResp.data.reference ?? token,
+        examScore: data.examScore ?? null,
+        status: "pending",
+      });
+
+      return { purchaseUrl: checkoutResp.data.authorization_url, provider: "paystack" as const };
     }
-    const redirectUrl = `${origin}/checkout/return?token=${token}`;
 
-    // Create the Whop hosted checkout configuration.
+    const whopPlanId = getWhopPlanId(data.plan, amountDollars);
+    const redirectUrl = `${CANONICAL_SITE_ORIGIN}/checkout/return?token=${encodeURIComponent(token)}`;
     const checkoutResp = await callWhop<{ id: string; purchase_url: string }>(
       "POST",
       "api/v1/checkout_configurations",
@@ -107,7 +144,6 @@ export const createWhopCheckout = createServerFn({ method: "POST" })
       throw new Error("Whop did not return a valid checkout configuration.");
     }
 
-    // Persist the pending checkout so finalization can verify and complete it.
     await db.insert(pendingCheckouts).values({
       token,
       courseSlug: course.slug,
@@ -116,14 +152,17 @@ export const createWhopCheckout = createServerFn({ method: "POST" })
       route: data.route ?? null,
       name: data.name,
       email: data.email,
-      amountCents: Math.round(amountDollars * 100),
+      amountCents,
+      country: data.country,
+      currency,
+      paymentProvider: "whop",
       whopPlanId,
       whopCheckoutConfigId: checkoutResp.id,
       examScore: data.examScore ?? null,
       status: "pending",
     });
 
-    return { purchaseUrl: checkoutResp.purchase_url };
+    return { purchaseUrl: checkoutResp.purchase_url, provider: "whop" as const };
   });
 
 // ── finalizeCheckout ───────────────────────────────────────────────────────
@@ -171,59 +210,74 @@ export const finalizeCheckout = createServerFn({ method: "GET" })
       throw new Error("This checkout session has already been processed.");
     }
 
-    // Verify the payment with Whop — do not trust the redirect alone.
-    const companyId = getCompanyId();
-
     let whopOrderId: string | null = null;
+    let paymentReference: string | null = pending.paymentReference;
 
-    // ── 1. Check payments API (covers all paid plans) ──────────────────────
-    const paymentsResp = await callWhop<{
-      data: Array<{ id: string; status: string; amount?: number }>;
-    }>(
-      "GET",
-      `api/v1/payments?company_id=${companyId}&checkout_configuration_ids[]=${pending.whopCheckoutConfigId}`,
-    );
+    if (pending.paymentProvider === "paystack") {
+      const reference = pending.paymentReference ?? pending.token;
+      const verifyResp = await callPaystack<{
+        status: boolean;
+        message: string;
+        data?: { status: string; amount: number; currency: string; reference: string };
+      }>("GET", `transaction/verify/${encodeURIComponent(reference)}`);
 
-    const SETTLED_STATUSES = new Set(["paid", "succeeded"]);
-    const payment = (paymentsResp.data ?? []).find((p) => SETTLED_STATUSES.has(p.status));
-
-    if (payment) {
-      // Defense-in-depth: verify the settled amount matches what we expect.
-      const expectedCents = pending.amountCents;
-      const paidCents = Math.round((payment.amount ?? 0) * 100);
-      if (paidCents > 0 && paidCents !== expectedCents) {
+      const payment = verifyResp.data;
+      if (!verifyResp.status || !payment || payment.status !== "success") {
         throw new Error(
-          `Payment amount mismatch (expected ${(expectedCents / 100).toFixed(2)}, got ${(paidCents / 100).toFixed(2)}). Contact support.`,
+          "Paystack has not confirmed this payment yet. Please wait a moment, then refresh this page.",
         );
       }
-      whopOrderId = payment.id;
-    }
-
-    // ── 2. Fallback: check memberships (covers $0 / free plans) ───────────
-    // Whop skips creating a payment record for free plans and goes straight
-    // to creating a membership. Query by plan_id and match on the checkout
-    // configuration ID stored in the membership.
-    if (!whopOrderId) {
-      const membershipsResp = await callWhop<{
-        data: Array<{ id: string; status: string; checkout_configuration_id: string | null }>;
+      if (
+        payment.amount !== pending.amountCents ||
+        payment.currency.toUpperCase() !== pending.currency.toUpperCase()
+      ) {
+        throw new Error("Payment amount mismatch. Contact support before trying again.");
+      }
+      paymentReference = payment.reference;
+    } else {
+      // Verify the payment with Whop — do not trust the redirect alone.
+      const companyId = getCompanyId();
+      const paymentsResp = await callWhop<{
+        data: Array<{ id: string; status: string; amount?: number }>;
       }>(
         "GET",
-        `api/v1/memberships?company_id=${companyId}&plan_ids[]=${pending.whopPlanId}&first=20`,
+        `api/v1/payments?company_id=${companyId}&checkout_configuration_ids[]=${pending.whopCheckoutConfigId}`,
       );
 
-      const ACTIVE_STATUSES = new Set(["active", "trialing", "past_due", "completed"]);
-      const membership = (membershipsResp.data ?? []).find(
-        (m) =>
-          m.checkout_configuration_id === pending.whopCheckoutConfigId &&
-          ACTIVE_STATUSES.has(m.status),
-      );
+      const SETTLED_STATUSES = new Set(["paid", "succeeded"]);
+      const payment = (paymentsResp.data ?? []).find((p) => SETTLED_STATUSES.has(p.status));
 
-      if (membership) {
-        whopOrderId = membership.id;
+      if (payment) {
+        const expectedCents = pending.amountCents;
+        const paidCents = Math.round((payment.amount ?? 0) * 100);
+        if (paidCents > 0 && paidCents !== expectedCents) {
+          throw new Error(
+            `Payment amount mismatch (expected ${(expectedCents / 100).toFixed(2)}, got ${(paidCents / 100).toFixed(2)}). Contact support.`,
+          );
+        }
+        whopOrderId = payment.id;
+      }
+
+      if (!whopOrderId) {
+        const membershipsResp = await callWhop<{
+          data: Array<{ id: string; status: string; checkout_configuration_id: string | null }>;
+        }>(
+          "GET",
+          `api/v1/memberships?company_id=${companyId}&plan_ids[]=${pending.whopPlanId}&first=20`,
+        );
+
+        const ACTIVE_STATUSES = new Set(["active", "trialing", "past_due", "completed"]);
+        const membership = (membershipsResp.data ?? []).find(
+          (m) =>
+            m.checkout_configuration_id === pending.whopCheckoutConfigId &&
+            ACTIVE_STATUSES.has(m.status),
+        );
+
+        if (membership) whopOrderId = membership.id;
       }
     }
 
-    if (!whopOrderId) {
+    if (pending.paymentProvider === "whop" && !whopOrderId) {
       throw new Error(
         "Payment not yet confirmed by Whop. Please wait a moment, then refresh this page.",
       );
@@ -240,6 +294,10 @@ export const finalizeCheckout = createServerFn({ method: "GET" })
         name: pending.name,
         email: pending.email,
         amountCents: pending.amountCents,
+        country: pending.country,
+        currency: pending.currency,
+        paymentProvider: pending.paymentProvider,
+        paymentReference,
         whopPlanId: pending.whopPlanId,
         whopOrderId,
       })

@@ -7,6 +7,7 @@ import { CheckCircle2, Copy, AlertCircle, RefreshCw, Download, ExternalLink, Loa
 import { certificateUrl } from "@/lib/certificate";
 import { saveCertLocally } from "@/lib/cert-storage";
 import { finalizeCheckout } from "@/actions/checkout";
+import { printCertificateAsPdf } from "@/lib/download-cert";
 // NOTE: download-cert is intentionally NOT statically imported here.
 // A static import would pull html-to-image into the SSR/server bundle, crashing
 // the Vercel/Cloudflare function. The dynamic import in the onClick handler keeps
@@ -58,7 +59,7 @@ function ReturnError({ error }: { error: Error }) {
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {isPendingError
-            ? "Whop is still processing your payment. Give it a moment then refresh."
+            ? "Your payment provider is still processing the payment. Give it a moment then refresh."
             : error.message}
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -96,13 +97,11 @@ function ReturnPage() {
         ? "Course + Certification"
         : "Certification";
 
-  const certRelativeLink =
+  const certLink =
     certificateCode ? certificateUrl({ slug: courseSlug, name, code: certificateCode }) : null;
 
   const certAbsoluteUrl =
-    typeof window !== "undefined" && certRelativeLink
-      ? `${window.location.origin}${certRelativeLink}`
-      : certRelativeLink ?? "";
+    certLink ?? "";
 
   const issuedDate = new Date().toLocaleDateString("en-US", {
     month: "long",
@@ -147,7 +146,7 @@ function ReturnPage() {
           <p className="mt-1 text-xs text-muted-foreground">Order #{orderId}</p>
         </div>
 
-        {certificateCode && certRelativeLink ? (
+        {certificateCode && certLink ? (
           <>
             {/* Certificate preview */}
             <CertPreview
@@ -165,8 +164,7 @@ function ReturnPage() {
                 onClick={async () => {
                   setDownloading(true);
                   try {
-                    const { downloadCertAsImage } = await import("@/lib/download-cert");
-                    await downloadCertAsImage(`certifypath-${courseSlug}.png`);
+                    await printCertificateAsPdf();
                   } finally {
                     setDownloading(false);
                   }
@@ -176,11 +174,11 @@ function ReturnPage() {
                 {downloading ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> Generating…</>
                 ) : (
-                  <><Download className="h-4 w-4" /> Download Certificate</>
+                  <><Download className="h-4 w-4" /> Print / Save as PDF</>
                 )}
               </button>
               <a
-                href={certRelativeLink}
+                href={certLink}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-background px-5 py-2.5 text-sm font-medium hover:bg-muted"

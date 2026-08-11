@@ -26,10 +26,14 @@ in Postgres via Drizzle ORM, called through TanStack Start server functions.
   regardless of nesting) — this is why server-callable files (`createServerFn` wrappers) live in
   `src/actions/`, not `src/server/functions/`. Keep raw DB/schema/credential code strictly inside
   `src/server/` and callable server functions in `src/actions/`.
-- **Payments**: Whop — direct API (no Replit connector). API calls go through
-  `src/server/whopClient.ts` using `Authorization: Bearer WHOP_API_KEY`.
-  **Required env vars**: `WHOP_API_KEY` and `WHOP_COMPANY_ID` (set in Vercel project settings).
-  Whop plan IDs are mapped in `src/data/whop-plans.ts` by price point.
+- **Payments**: Whop for non-Nigerian buyers and Paystack for Nigerian buyers.
+  Whop calls go through `src/server/whopClient.ts`; Paystack calls go through
+  `src/server/paystackClient.ts`.
+  **Required Vercel env vars**: `WHOP_API_KEY`, `WHOP_COMPANY_ID`, and
+  `PAYSTACK_SECRET_KEY`. Paystack uses the server-only secret key and never
+  exposes it to the browser. Whop plan IDs are mapped in
+  `src/data/whop-plans.ts`; Paystack converts catalog USD prices to NGN at the
+  rate in `src/data/payment.ts` and sends the amount in kobo.
 - **Package manager**: bun (`bun.lock`, `bunfig.toml`)
 
 ## Running on Replit
@@ -42,22 +46,27 @@ in Postgres via Drizzle ORM, called through TanStack Start server functions.
   rebase/amend of pushed commits) since it resyncs to the Lovable editor (see `AGENTS.md`).
 
 ## Checkout flow
-Real Whop hosted checkout — redirect-based, payment verified server-side before issuing anything.
+Real hosted checkout — redirect-based, payment verified server-side before issuing anything.
 
 1. User fills in name + email on `/checkout/$slug?plan=...`
-2. "Pay" button calls `createWhopCheckout` (server fn in `src/actions/checkout.ts`)
-   - Looks up the Whop plan ID via `getWhopPlanId(plan, price)` from `src/data/whop-plans.ts`
-   - Creates a `pending_checkouts` DB record with a unique opaque token
-   - POSTs to Whop API → `api/v1/checkout_configurations` → gets `purchase_url`
-   - Returns `purchaseUrl` to the client
-3. Client redirects to Whop's hosted checkout page (`purchase_url`)
-4. User pays on Whop → Whop redirects to `/checkout/return?token=<token>`
-5. `finalizeCheckout` (server fn) verifies the payment via Whop's payments API, then creates the
-   order record and (for cert/bundle) mints the certificate. Marks `pending_checkouts` confirmed.
-6. `/checkout/return` (`src/routes/checkout.return.tsx`) shows success + certificate code.
+2. "Pay" button calls `createCheckout` (server fn in `src/actions/checkout.ts`).
+   The country selector sends `NG` for Nigeria and another ISO country code otherwise.
+   - Nigeria initializes Paystack `transaction/initialize` in NGN/kobo.
+   - Other countries look up the Whop plan ID and create a Whop checkout configuration.
+   - Both paths create a `pending_checkouts` record with a unique opaque token.
+3. Client redirects to the selected provider's hosted checkout page.
+4. The provider redirects to `https://certifypath.online/checkout/return?token=<token>`.
+5. `finalizeCheckout` verifies the payment server-side, checking Paystack success,
+   amount, and currency for Nigeria, or Whop payments/memberships for other countries.
+   It then creates the order and (for cert/bundle) mints the certificate.
+6. `/checkout/return` shows success + certificate code, saves the certificate URL in
+   browser storage, and offers the styled browser print dialog where the buyer can
+   choose “Save as PDF”.
 
 Idempotent: if user refreshes the return page, `finalizeCheckout` detects `status=confirmed` and
 returns the cached result without double-charging or creating duplicate records.
+
+Certificate URLs always use the canonical `https://certifypath.online` origin.
 
 ## User preferences
 None recorded yet.

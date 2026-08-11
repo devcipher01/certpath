@@ -7,6 +7,7 @@ import { CertPreview } from "@/components/cert-preview";
 import { verifyCertificate } from "@/actions/certificates";
 import { ShieldCheck, ShieldAlert, Download, Loader2, Copy } from "lucide-react";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
+import { certificateUrl } from "@/lib/certificate";
 // NOTE: download-cert intentionally NOT statically imported — see checkout.return.tsx
 
 const searchSchema = z.object({
@@ -67,7 +68,11 @@ function CertificatePage() {
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const certUrl = typeof window !== "undefined" ? window.location.href : "";
+  const certUrl = certificateUrl({
+    slug: course.slug,
+    name: result.valid ? result.recipientName : Route.useParams().name,
+    code,
+  });
 
   function copyUrl() {
     navigator.clipboard?.writeText(certUrl).then(() => {
@@ -128,8 +133,8 @@ function CertificatePage() {
             onClick={async () => {
               setDownloading(true);
               try {
-                const { downloadCertAsImage } = await import("@/lib/download-cert");
-                await downloadCertAsImage(`certifypath-${course.slug}.png`);
+                const { printCertificateAsPdf } = await import("@/lib/download-cert");
+                await printCertificateAsPdf();
               } finally {
                 setDownloading(false);
               }
@@ -139,7 +144,7 @@ function CertificatePage() {
             {downloading ? (
               <><Loader2 className="h-4 w-4 animate-spin" /> Generating…</>
             ) : (
-              <><Download className="h-4 w-4" /> Download Certificate</>
+              <><Download className="h-4 w-4" /> Print / Save as PDF</>
             )}
           </button>
         </div>

@@ -35,3 +35,13 @@ export async function downloadCertAsImage(filename = "certificate.png"): Promise
   link.href = dataUrl;
   link.click();
 }
+
+/** Opens a print-only certificate view so the browser can save a real PDF. */
+export async function printCertificateAsPdf(): Promise<void> {
+  const node = document.getElementById("cert-print-target");
+  if (!node) throw new Error("Certificate element not found on page.");
+
+  // Use the current document so Tailwind styles and the existing print-only
+  // layout are retained. The browser's print dialog includes "Save as PDF".
+  window.print();
+}

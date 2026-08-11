@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Lock, ShieldCheck } from "lucide-react";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
-import { createWhopCheckout } from "@/actions/checkout";
-import { getWhopPlanId } from "@/data/whop-plans";
+import { createCheckout } from "@/actions/checkout";
+import { usdToNgn } from "@/data/payment";
 
 const searchSchema = z.object({
   plan: z.enum(["cert", "course", "bundle"]).default("cert"),
@@ -70,10 +70,9 @@ function CheckoutPage() {
       : plan === "bundle"
         ? "Course + Certification"
         : `Certification (${route === "attest" ? "Attestation" : "Exam"})`;
-  const whopPlanId = getWhopPlanId(plan, price);
-
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [country, setCountry] = useState("US");
   const [attest, setAttest] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -87,11 +86,10 @@ function CheckoutPage() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const result = await createWhopCheckout({
-        data: { courseSlug: course.slug, plan, route, name, email, examScore: score },
+      const result = await createCheckout({
+        data: { courseSlug: course.slug, plan, route, name, email, country, examScore: score },
       });
-      // Redirect to Whop's hosted checkout page. On success, Whop redirects the
-      // buyer back to /checkout/return?token=... where finalizeCheckout runs.
+      // Both providers return to the same server-side verification page.
       window.location.href = result.purchaseUrl;
     } catch (err) {
       reportLovableError(err instanceof Error ? err : new Error(String(err)), { boundary: "checkout_submit" });
@@ -107,7 +105,9 @@ function CheckoutPage() {
       <main className="mx-auto grid w-full max-w-5xl flex-1 gap-8 px-4 py-12 lg:grid-cols-[1fr_360px]">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Checkout</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Secure in-app checkout powered by Whop.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Nigeria uses Paystack in NGN. All other countries use Whop in USD.
+          </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5 rounded-xl border border-border bg-card p-6">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -122,13 +122,40 @@ function CheckoutPage() {
             </div>
 
             <div>
-              <Label>Card details</Label>
+              <Label htmlFor="country">Country</Label>
+              <select
+                id="country"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+              >
+                <option value="US">United States</option>
+                <option value="NG">Nigeria</option>
+                <option value="GB">United Kingdom</option>
+                <option value="CA">Canada</option>
+                <option value="GH">Ghana</option>
+                <option value="KE">Kenya</option>
+                <option value="ZA">South Africa</option>
+                <option value="AU">Australia</option>
+                <option value="DE">Germany</option>
+                <option value="FR">France</option>
+                <option value="IN">India</option>
+                <option value="XX">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <Label>Payment</Label>
               <div className="mt-1 rounded-md border border-dashed border-border bg-muted/40 p-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Lock className="h-4 w-4" />
-                  Whop embedded checkout will render here.
+                  {country === "NG" ? "Paystack secure checkout" : "Whop secure checkout"}
                 </div>
-                <div className="mt-1 text-xs">Plan ID: <code>{whopPlanId}</code></div>
+                <div className="mt-1 text-xs">
+                  {country === "NG"
+                    ? `Charged in NGN · ₦${usdToNgn(price).toLocaleString()}`
+                    : "Charged in USD"}
+                </div>
               </div>
             </div>
 
@@ -148,7 +175,11 @@ function CheckoutPage() {
               disabled={!canSubmit}
               className="w-full rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {submitting ? "Processing..." : `Pay ${price} · Complete purchase`}
+              {submitting
+                ? "Processing..."
+                : country === "NG"
+                  ? `Pay ₦${usdToNgn(price).toLocaleString()} · Complete purchase`
+                  : `Pay $${price}.00 · Complete purchase`}
             </button>
             {submitError && (
               <p className="text-center text-sm text-destructive">{submitError}</p>
@@ -167,7 +198,9 @@ function CheckoutPage() {
           </div>
           <div className="mt-4 flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Subtotal</span>
-            <span className="text-foreground">${price}.00</span>
+            <span className="text-foreground">
+              {country === "NG" ? `₦${usdToNgn(price).toLocaleString()}` : `$${price}.00`}
+            </span>
           </div>
           <div className="mt-1 flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Tax</span>
@@ -175,7 +208,9 @@ function CheckoutPage() {
           </div>
           <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
             <span className="font-semibold">Total</span>
-            <span className="text-xl font-semibold">${price}.00</span>
+            <span className="text-xl font-semibold">
+              {country === "NG" ? `₦${usdToNgn(price).toLocaleString()}` : `$${price}.00`}
+            </span>
           </div>
           <div className="mt-4 text-xs text-muted-foreground">
             One-time payment. Instant access after checkout.
