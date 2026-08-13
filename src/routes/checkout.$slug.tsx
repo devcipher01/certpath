@@ -74,15 +74,23 @@ function CheckoutPage() {
   const [name, setName] = useState("");
   const [country, setCountry] = useState("US");
   const [attest, setAttest] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const needsAttestation = plan === "cert" && route === "attest";
-  const canSubmit = email && name && (!needsAttestation || attest) && !submitting;
+  const canSubmit = email && name && termsAccepted && !submitting;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!canSubmit) {
+      if (!termsAccepted) {
+        setSubmitError("Please accept the Terms and Conditions to continue.");
+      } else {
+        setSubmitError("Please complete the required fields before continuing.");
+      }
+      return;
+    }
     setSubmitting(true);
     setSubmitError(null);
     try {
@@ -106,7 +114,7 @@ function CheckoutPage() {
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Checkout</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Nigeria uses Paystack in NGN. All other countries use Whop in USD.
+            Secure checkout, priced automatically in your local currency.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5 rounded-xl border border-border bg-card p-6">
@@ -129,18 +137,18 @@ function CheckoutPage() {
                 onChange={(e) => setCountry(e.target.value)}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
               >
-                <option value="US">United States</option>
-                <option value="NG">Nigeria</option>
-                <option value="GB">United Kingdom</option>
-                <option value="CA">Canada</option>
-                <option value="GH">Ghana</option>
-                <option value="KE">Kenya</option>
-                <option value="ZA">South Africa</option>
                 <option value="AU">Australia</option>
-                <option value="DE">Germany</option>
+                <option value="CA">Canada</option>
                 <option value="FR">France</option>
+                <option value="DE">Germany</option>
+                <option value="GH">Ghana</option>
                 <option value="IN">India</option>
+                <option value="KE">Kenya</option>
+                <option value="NG">Nigeria</option>
                 <option value="XX">Other</option>
+                <option value="ZA">South Africa</option>
+                <option value="GB">United Kingdom</option>
+                <option value="US">United States</option>
               </select>
             </div>
 
@@ -161,7 +169,14 @@ function CheckoutPage() {
 
             {needsAttestation && (
               <label className="flex items-start gap-3 rounded-md border border-border bg-muted/30 p-3 text-sm">
-                <Checkbox checked={attest} onCheckedChange={(v) => setAttest(v === true)} className="mt-0.5" />
+                  <Checkbox
+                    checked={attest}
+                    onCheckedChange={(v) => {
+                      setAttest(v === true);
+                      if (v === true) setSubmitError(null);
+                    }}
+                    className="mt-0.5"
+                  />
                 <span className="text-muted-foreground">
                   I attest that I have working knowledge and/or professional experience in{" "}
                   <strong className="text-foreground">{course.title}</strong> and understand this
@@ -169,6 +184,20 @@ function CheckoutPage() {
                 </span>
               </label>
             )}
+
+            <label className="flex items-start gap-3 rounded-md p-3 text-sm">
+              <Checkbox
+                checked={termsAccepted}
+                onCheckedChange={(v) => {
+                  setTermsAccepted(v === true);
+                  if (v === true) setSubmitError(null);
+                }}
+                className="mt-0.5"
+              />
+              <span className="text-muted-foreground">
+                I agree to the <Link to="/terms" className="text-primary underline">Terms and Conditions</Link>.
+              </span>
+            </label>
 
             <button
               type="submit"

@@ -639,7 +639,7 @@ export const COURSES: Course[] = [
     lessons: 8,
     level: "Beginner",
     coursePrice: 19,
-    certPrice: 15,
+    certPrice: 9,
     bundlePrice: 15,
     tutorials: MEDICAL_TRANSCRIPTIONIST_TUTORIALS.map((tut, i) => ({
       ...tut,
