@@ -173,7 +173,7 @@ function CoursePage() {
                 </button>
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
-                Bundle (course + certification) — ${course.bundlePrice}. Cert-only from ${course.certPrice}.
+                Certification starts at ${course.certPrice}.
               </p>
             </div>
             <CertPreview courseTitle={course.title} />
@@ -264,25 +264,11 @@ function CoursePage() {
 
           <aside className="space-y-3">
             <PurchaseCard
-              title="Certification only"
+              title="Get certification"
               price={course.certPrice}
               slug={course.slug}
               plan="cert"
-              blurb="Get the credential now via exam or attestation."
-            />
-            <PurchaseCard
-              title="Course only"
-              price={course.coursePrice}
-              slug={course.slug}
-              plan="course"
-              blurb="Full tutorials and materials."
-            />
-            <PurchaseCard
-              title="Course + Certification"
-              price={course.bundlePrice}
-              slug={course.slug}
-              plan="bundle"
-              blurb="Best value — everything included."
+              blurb="Choose your route: exam or purchase-and-attest."
               highlight
             />
           </aside>
