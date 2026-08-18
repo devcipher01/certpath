@@ -320,18 +320,32 @@ function PurchaseCard({
         <div className="text-2xl font-semibold text-foreground">${price}</div>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">{blurb}</p>
-      <Link
-        to="/checkout/$slug"
-        params={{ slug }}
-        search={{ plan }}
-        className={`mt-4 flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium ${
-          highlight
-            ? "bg-primary text-primary-foreground hover:bg-primary/90"
-            : "border border-input bg-background text-foreground hover:bg-accent"
-        }`}
-      >
-        Continue <ArrowRight className="h-4 w-4" />
-      </Link>
+      {plan === "cert" ? (
+        <Link
+          to="/certifications/$slug"
+          params={{ slug }}
+          className={`mt-4 flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium ${
+            highlight
+              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+              : "border border-input bg-background text-foreground hover:bg-accent"
+          }`}
+        >
+          Continue <ArrowRight className="h-4 w-4" />
+        </Link>
+      ) : (
+        <Link
+          to="/checkout/$slug"
+          params={{ slug }}
+          search={{ plan }}
+          className={`mt-4 flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium ${
+            highlight
+              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+              : "border border-input bg-background text-foreground hover:bg-accent"
+          }`}
+        >
+          Continue <ArrowRight className="h-4 w-4" />
+        </Link>
+      )}
     </div>
   );
 }
