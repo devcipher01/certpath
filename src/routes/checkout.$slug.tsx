@@ -214,7 +214,7 @@ function CheckoutPage() {
               <p className="text-center text-sm text-destructive">{submitError}</p>
             )}
             <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-              <ShieldCheck className="h-3.5 w-3.5" /> Secure checkout · 7-day refund
+              <ShieldCheck className="h-3.5 w-3.5" /> Secure checkout
             </p>
           </form>
         </div>
